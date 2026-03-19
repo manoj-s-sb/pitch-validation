@@ -470,10 +470,10 @@ function processSessionBalls(csvData, sessionName) {
 
 function generateSessionReport() {
   const headers = [
-    'Lane', 'Date', 'Session ID',
-    'Target Speed (km/h)', 'Delivered Speed (km/h)', 'Speed Deviation (km/h)', 'Speed Error (%)',
-    'Target X (cm)', 'Delivered X (cm)', 'X Deviation (cm)', 'X Error (%)',
-    'Target Y (cm)', 'Delivered Y (cm)', 'Y Deviation (cm)', 'Y Error (%)'
+    'Lane Number', 'Session Date', 'Session ID',
+    'User Selected Speed (km/h)', 'Machine Released Speed (km/h)', 'Speed Variance (km/h)', 'Speed Accuracy Loss (%)',
+    'User Selected X (cm)', 'Machine Bowled X (cm)', 'X Variance (cm)', 'X Accuracy Loss (%)',
+    'User Selected Y (cm)', 'Machine Bowled Y (cm)', 'Y Variance (cm)', 'Y Accuracy Loss (%)'
   ];
 
   const rows = [headers.join(',')];
