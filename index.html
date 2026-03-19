@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pitching Validation</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="pitch-mapping.css">
+</head>
+<body>
+
+  <div class="header">
+    <h1><i data-lucide="target"></i><span>Pitching</span> Validation</h1>
+    <nav class="breadcrumb" id="breadcrumb">
+      <a class="root-btn" onclick="goBack()" title="Go back"><i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i></a>
+      <a class="root-btn" onclick="navigate('/')" title="Go to root"><i data-lucide="home" style="width: 18px; height: 18px;"></i></a>
+      <input type="text" id="pathInput" class="path-input" value="" placeholder="userId / bookingId / sessionId" onkeydown="if(event.key==='Enter') navigateToInput()">
+      <button class="go-btn" onclick="navigateToInput()"><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i></button>
+    </nav>
+    <div class="search-box">
+      <i data-lucide="search" class="search-icon" style="width: 18px; height: 18px;"></i>
+      <input type="text" id="searchInput" placeholder="Filter files..." oninput="filterFiles()">
+    </div>
+    <button class="upload-csv-btn" onclick="document.getElementById('csvUpload').click()" title="Upload CSV">
+      <i data-lucide="upload" style="width: 16px; height: 16px;"></i> Upload CSV
+    </button>
+    <input type="file" id="csvUpload" accept=".csv" style="display:none;" onchange="handleCsvUpload(event)">
+    <button class="upload-csv-btn" onclick="openBulkUploadModal()" title="Bulk Upload CSVs">
+      <i data-lucide="files" style="width: 16px; height: 16px;"></i> Bulk Upload
+    </button>
+    <input type="file" id="csvBulkAdd" accept=".csv" multiple style="display:none;" onchange="addBulkFiles(event)">
+  </div>
+
+  <div class="toolbar">
+    <div class="info" id="fileInfo">Loading...</div>
+    <div class="view-toggle">
+      <button id="gridBtn" class="active" onclick="setView('grid')" title="Grid view"><i data-lucide="layout-grid" style="width: 18px; height: 18px;"></i></button>
+      <button id="listBtn" onclick="setView('list')" title="List view"><i data-lucide="list" style="width: 18px; height: 18px;"></i></button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div class="status">
+      <div class="spinner"></div>
+      <div>Connecting to server...</div>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div class="modal-overlay" id="modal" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="title" id="modalTitle"></div>
+        <div class="actions">
+          <button onclick="showPitchMapping()" id="pitchMapBtn" style="display:none;"><i data-lucide="map" style="width: 16px; height: 16px;"></i> Pitch Mapping</button>
+          <button onclick="showCSVTable()" id="csvTableBtn" style="display:none;"><i data-lucide="table" style="width: 16px; height: 16px;"></i> Table View</button>
+          <button onclick="generateSessionReport()" id="reportBtn" style="display:none;"><i data-lucide="file-down" style="width: 16px; height: 16px;"></i> Generate Report</button>
+          <button onclick="downloadFile()" id="downloadBtn"><i data-lucide="download" style="width: 16px; height: 16px;"></i> Download</button>
+          <button class="close-btn" onclick="closeModal()"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
+        </div>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="pitch-mapping.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if(window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
