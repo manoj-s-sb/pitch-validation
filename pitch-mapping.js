@@ -445,33 +445,35 @@ function processSessionBalls(csvData, sessionName) {
   const avgActX = countActual > 0 ? totalActualXcm / countActual : NaN;
   const avgActZ = countActual > 0 ? totalActualZcm / countActual : NaN;
 
-  const spdDiff = !isNaN(avgRelSpd) && !isNaN(avgCfgSpd) ? (avgRelSpd - avgCfgSpd).toFixed(1) : '';
-  const xDiff = !isNaN(avgActX) && !isNaN(avgCfgX) ? (avgActX - avgCfgX).toFixed(1) : '';
-  const yDiff = !isNaN(avgActZ) && !isNaN(avgCfgY) ? (avgActZ - avgCfgY).toFixed(1) : '';
+  const spdDiff = !isNaN(avgRelSpd) && !isNaN(avgCfgSpd) ? avgRelSpd - avgCfgSpd : NaN;
+  const spdErrPct = !isNaN(spdDiff) && avgCfgSpd !== 0 ? Math.abs(spdDiff) / avgCfgSpd * 100 : NaN;
+  const xDiff = !isNaN(avgActX) && !isNaN(avgCfgX) ? avgActX - avgCfgX : NaN;
+  const xErrPct = !isNaN(xDiff) ? Math.abs(xDiff) / 300 * 100 : NaN;
+  const yDiff = !isNaN(avgActZ) && !isNaN(avgCfgY) ? avgActZ - avgCfgY : NaN;
+  const yErrPct = !isNaN(yDiff) ? Math.abs(yDiff) / 1000 * 100 : NaN;
+
+  const f = (v) => !isNaN(v) ? v.toFixed(1) : '';
+  const r = (v) => !isNaN(v) ? Math.round(v) : '';
 
   return [[
     meta.lane,
     meta.date,
     sessionId ? '"' + sessionId.replace(/"/g, '""') + '"' : '',
-    !isNaN(avgRelSpd) ? Math.round(avgRelSpd) : '',
-    !isNaN(avgCfgSpd) ? Math.round(avgCfgSpd) : '',
-    spdDiff,
-    !isNaN(avgCfgX) ? avgCfgX.toFixed(1) : '',
-    !isNaN(avgCfgY) ? avgCfgY.toFixed(1) : '',
-    !isNaN(avgActX) ? avgActX.toFixed(1) : '',
-    !isNaN(avgActZ) ? avgActZ.toFixed(1) : '',
-    xDiff,
-    yDiff,
+    // Speed
+    r(avgCfgSpd), r(avgRelSpd), f(spdDiff), f(spdErrPct),
+    // X
+    f(avgCfgX), f(avgActX), f(xDiff), f(xErrPct),
+    // Y
+    f(avgCfgY), f(avgActZ), f(yDiff), f(yErrPct),
   ]];
 }
 
 function generateSessionReport() {
   const headers = [
     'Lane', 'Date', 'Session ID',
-    'Avg Release Speed (km/h)', 'Avg Config Speed (km/h)', 'Speed Diff (km/h)',
-    'Avg Config X (cm)', 'Avg Config Y (cm)',
-    'Avg Actual X (cm)', 'Avg Actual Z (cm)',
-    'X Diff (cm)', 'Y Diff (cm)'
+    'Target Speed (km/h)', 'Delivered Speed (km/h)', 'Speed Deviation (km/h)', 'Speed Error (%)',
+    'Target X (cm)', 'Delivered X (cm)', 'X Deviation (cm)', 'X Error (%)',
+    'Target Y (cm)', 'Delivered Y (cm)', 'Y Deviation (cm)', 'Y Error (%)'
   ];
 
   const rows = [headers.join(',')];
