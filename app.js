@@ -379,33 +379,40 @@ function openBulkUploadModal() {
 }
 
 function renderBulkUploadUI() {
-  let html = '<div style="width:100%; max-width:600px; margin:0 auto;">';
+  let html = '<div style="width:100%; max-width:800px; margin:0 auto;">';
 
-  // File list
+  // File grid
   html += '<div style="margin-bottom:20px;">';
   if (bulkCsvFiles.length === 0) {
-    html += '<div style="text-align:center; padding:40px 20px; background:var(--surface); border:2px dashed var(--border-solid); border-radius:12px; color:var(--text-dim);">';
-    html += '<i data-lucide="file-plus" style="width:40px; height:40px; margin-bottom:12px; opacity:0.5;"></i>';
+    html += '<div style="text-align:center; padding:60px 20px; background:var(--surface); border:2px dashed var(--border-solid); border-radius:16px; color:var(--text-dim);">';
+    html += '<i data-lucide="file-plus" style="width:48px; height:48px; margin-bottom:12px; opacity:0.5;"></i>';
     html += '<p style="font-size:15px; font-weight:500;">No files added yet</p>';
     html += '<p style="font-size:13px; margin-top:4px;">Click "Add Files" to select CSV files</p>';
     html += '</div>';
   } else {
-    // Select all checkbox
+    // Toolbar: select all + count
     const allChecked = bulkCsvFiles.every(f => f.checked);
-    html += `<div style="display:flex; align-items:center; gap:8px; padding:10px 16px; background:var(--surface2); border:1px solid var(--border); border-radius:12px 12px 0 0; border-bottom:none;">
+    const checkedCount = bulkCsvFiles.filter(f => f.checked).length;
+    html += `<div style="display:flex; align-items:center; gap:10px; padding:10px 4px; margin-bottom:12px;">
       <input type="checkbox" id="bulkSelectAll" ${allChecked ? 'checked' : ''} onchange="toggleBulkSelectAll(this.checked)" style="width:16px; height:16px; cursor:pointer; accent-color:var(--accent);">
       <label for="bulkSelectAll" style="font-size:13px; font-weight:600; color:var(--text-dim); cursor:pointer;">Select All</label>
-      <span style="margin-left:auto; font-size:12px; color:var(--text-dim);">${bulkCsvFiles.filter(f => f.checked).length} of ${bulkCsvFiles.length} selected</span>
+      <span style="margin-left:auto; font-size:12px; color:var(--text-dim);">${checkedCount} of ${bulkCsvFiles.length} selected</span>
     </div>`;
-    html += '<div style="background:var(--surface); border:1px solid var(--border); border-radius:0 0 12px 12px; overflow:hidden;">';
+
+    // Grid of file cards
+    html += '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:16px;">';
     bulkCsvFiles.forEach((file, i) => {
-      html += `<div style="display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border);">
-        <input type="checkbox" ${file.checked ? 'checked' : ''} onchange="toggleBulkFile(${i}, this.checked)" style="width:16px; height:16px; cursor:pointer; accent-color:var(--accent); flex-shrink:0;">
-        <i data-lucide="file-text" style="width:18px; height:18px; color:var(--doc); flex-shrink:0;"></i>
-        <span style="flex:1; font-size:14px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(file.name)}</span>
-        <button onclick="removeBulkFile(${i})" style="background:none; border:none; cursor:pointer; color:var(--text-dim); padding:4px; border-radius:4px;" title="Remove">
-          <i data-lucide="x" style="width:16px; height:16px;"></i>
+      const shortName = file.name.replace(/\.csv$/i, '');
+      const isChecked = file.checked;
+      html += `<div style="position:relative; background:var(--surface); border:2px solid ${isChecked ? 'var(--accent)' : 'var(--border)'}; border-radius:16px; padding:20px 12px 14px; text-align:center; cursor:pointer; transition:all 0.2s; box-shadow:var(--shadow-sm);${isChecked ? ' box-shadow:0 0 0 3px var(--accent-glow);' : ''}" onclick="toggleBulkFile(${i}, ${!isChecked})">
+        <input type="checkbox" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleBulkFile(${i}, !${isChecked})" style="position:absolute; top:10px; left:10px; width:16px; height:16px; cursor:pointer; accent-color:var(--accent);">
+        <button onclick="event.stopPropagation(); removeBulkFile(${i})" style="position:absolute; top:8px; right:8px; background:none; border:none; cursor:pointer; color:var(--text-dim); padding:4px; border-radius:6px; transition:all 0.2s; line-height:0;" title="Remove" onmouseover="this.style.background='#fee2e2';this.style.color='#ef4444'" onmouseout="this.style.background='none';this.style.color='var(--text-dim)'">
+          <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
         </button>
+        <div style="width:52px; height:52px; margin:0 auto 10px; background:var(--surface2); border-radius:14px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border);">
+          <i data-lucide="file-text" style="width:26px; height:26px; color:var(--doc);"></i>
+        </div>
+        <div style="font-size:12px; font-weight:600; color:var(--text); word-break:break-word; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;" title="${escapeHtml(file.name)}">${escapeHtml(shortName)}</div>
       </div>`;
     });
     html += '</div>';

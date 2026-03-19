@@ -399,16 +399,25 @@ const DIFF_PARAMS = [
   { key: 'rTilt', setCol: 'R-Tilt (Set)', readCol: 'R-Tilt (Read)' },
 ];
 
+function parseFileNameMeta(fileName) {
+  // Pattern: Lane2_2026-03-15_220944_stats.csv
+  const laneMatch = fileName.match(/Lane(\d+)/i);
+  const dateMatch = fileName.match(/(\d{4}-\d{2}-\d{2})/);
+  return {
+    lane: laneMatch ? laneMatch[1] : '',
+    date: dateMatch ? dateMatch[1] : '',
+  };
+}
+
 function processSessionBalls(csvData, sessionName) {
   const balls = parsePitchBalls(csvData);
-  const results = [];
+  const meta = parseFileNameMeta(sessionName);
 
   let totalReleaseSpd = 0, countReleaseSpd = 0;
   let totalConfigSpd = 0, countConfigSpd = 0;
   let totalConfigXcm = 0, totalConfigYcm = 0, countConfig = 0;
   let totalActualXcm = 0, totalActualZcm = 0, countActual = 0;
-  const diffTotals = { pan: 0, mTilt: 0, lTilt: 0, rTilt: 0 };
-  const diffCnts = { pan: 0, mTilt: 0, lTilt: 0, rTilt: 0 };
+  let sessionId = '';
 
   balls.forEach(ball => {
     const relSpd = parseFloat(ball.releaseSpeed);
@@ -423,58 +432,46 @@ function processSessionBalls(csvData, sessionName) {
     if (!isNaN(cfgXcm)) { totalConfigXcm += cfgXcm; totalConfigYcm += cfgYcm; countConfig++; }
     if (!isNaN(actXcm)) { totalActualXcm += actXcm; totalActualZcm += actZcm; countActual++; }
 
-    const diffs = {};
-    DIFF_PARAMS.forEach(p => {
-      const si = pitchColIdx[p.setCol];
-      const ri = pitchColIdx[p.readCol];
-      const sv = si !== undefined ? parseFloat(ball.row[si]) : NaN;
-      const rv = ri !== undefined ? parseFloat(ball.row[ri]) : NaN;
-      if (!isNaN(sv) && !isNaN(rv)) {
-        diffs[p.key] = rv - sv;
-        diffTotals[p.key] += (rv - sv);
-        diffCnts[p.key]++;
-      } else {
-        diffs[p.key] = '';
-      }
-    });
-
-    // Get Session ID from CSV column if available
-    const sessionIdCol = pitchColIdx['Session ID'];
-    const sessionId = sessionIdCol !== undefined ? ball.row[sessionIdCol] : '';
-
-    results.push([
-      sessionId ? '"' + sessionId.replace(/"/g, '""') + '"' : '',
-      ball.ballId,
-      !isNaN(relSpd) ? Math.round(relSpd) : '',
-      !isNaN(cfgSpd) ? Math.round(cfgSpd) : '',
-      !isNaN(cfgXcm) ? cfgXcm.toFixed(1) : '',
-      !isNaN(cfgYcm) ? cfgYcm.toFixed(1) : '',
-      !isNaN(actXcm) ? actXcm.toFixed(1) : '',
-      !isNaN(actZcm) ? actZcm.toFixed(1) : '',
-    ]);
+    if (!sessionId) {
+      const sessionIdCol = pitchColIdx['Session ID'];
+      sessionId = sessionIdCol !== undefined ? ball.row[sessionIdCol] : '';
+    }
   });
 
-  // Average row for this session (bold markers)
-  results.push([
-    '**AVERAGE**',
-    '',
-    countReleaseSpd > 0 ? Math.round(totalReleaseSpd / countReleaseSpd) : '',
-    countConfigSpd > 0 ? Math.round(totalConfigSpd / countConfigSpd) : '',
-    countConfig > 0 ? (totalConfigXcm / countConfig).toFixed(1) : '',
-    countConfig > 0 ? (totalConfigYcm / countConfig).toFixed(1) : '',
-    countActual > 0 ? (totalActualXcm / countActual).toFixed(1) : '',
-    countActual > 0 ? (totalActualZcm / countActual).toFixed(1) : '',
-  ]);
+  const avgRelSpd = countReleaseSpd > 0 ? totalReleaseSpd / countReleaseSpd : NaN;
+  const avgCfgSpd = countConfigSpd > 0 ? totalConfigSpd / countConfigSpd : NaN;
+  const avgCfgX = countConfig > 0 ? totalConfigXcm / countConfig : NaN;
+  const avgCfgY = countConfig > 0 ? totalConfigYcm / countConfig : NaN;
+  const avgActX = countActual > 0 ? totalActualXcm / countActual : NaN;
+  const avgActZ = countActual > 0 ? totalActualZcm / countActual : NaN;
 
-  return results;
+  const spdDiff = !isNaN(avgRelSpd) && !isNaN(avgCfgSpd) ? (avgRelSpd - avgCfgSpd).toFixed(1) : '';
+  const xDiff = !isNaN(avgActX) && !isNaN(avgCfgX) ? (avgActX - avgCfgX).toFixed(1) : '';
+  const yDiff = !isNaN(avgActZ) && !isNaN(avgCfgY) ? (avgActZ - avgCfgY).toFixed(1) : '';
+
+  return [[
+    meta.lane,
+    meta.date,
+    sessionId ? '"' + sessionId.replace(/"/g, '""') + '"' : '',
+    !isNaN(avgRelSpd) ? Math.round(avgRelSpd) : '',
+    !isNaN(avgCfgSpd) ? Math.round(avgCfgSpd) : '',
+    spdDiff,
+    !isNaN(avgCfgX) ? avgCfgX.toFixed(1) : '',
+    !isNaN(avgCfgY) ? avgCfgY.toFixed(1) : '',
+    !isNaN(avgActX) ? avgActX.toFixed(1) : '',
+    !isNaN(avgActZ) ? avgActZ.toFixed(1) : '',
+    xDiff,
+    yDiff,
+  ]];
 }
 
 function generateSessionReport() {
   const headers = [
-    'Session ID', 'Ball ID',
-    'Release Speed (km/h)', 'Config Speed (km/h)',
-    'Config X (cm)', 'Config Y (cm)',
-    'Actual X (cm)', 'Actual Z (cm)'
+    'Lane', 'Date', 'Session ID',
+    'Avg Release Speed (km/h)', 'Avg Config Speed (km/h)', 'Speed Diff (km/h)',
+    'Avg Config X (cm)', 'Avg Config Y (cm)',
+    'Avg Actual X (cm)', 'Avg Actual Z (cm)',
+    'X Diff (cm)', 'Y Diff (cm)'
   ];
 
   const rows = [headers.join(',')];
