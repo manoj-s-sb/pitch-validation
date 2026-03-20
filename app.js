@@ -372,6 +372,7 @@ function openBulkUploadModal() {
 
   title.textContent = 'Bulk CSV Upload';
   body.innerHTML = renderBulkUploadUI();
+  initBulkDropZone();
 
   modal.classList.add('active');
   document.addEventListener('keydown', handleModalKey);
@@ -379,7 +380,7 @@ function openBulkUploadModal() {
 }
 
 function renderBulkUploadUI() {
-  let html = '<div style="width:100%; max-width:800px; margin:0 auto;">';
+  let html = '<div id="bulkDropZone" style="width:100%; max-width:800px; margin:0 auto;">';
 
   // File grid
   html += '<div style="margin-bottom:20px;">';
@@ -387,7 +388,7 @@ function renderBulkUploadUI() {
     html += '<div style="text-align:center; padding:60px 20px; background:var(--surface); border:2px dashed var(--border-solid); border-radius:16px; color:var(--text-dim);">';
     html += '<i data-lucide="file-plus" style="width:48px; height:48px; margin-bottom:12px; opacity:0.5;"></i>';
     html += '<p style="font-size:15px; font-weight:500;">No files added yet</p>';
-    html += '<p style="font-size:13px; margin-top:4px;">Click "Add Files" to select CSV files</p>';
+    html += '<p style="font-size:13px; margin-top:4px;">Drag & drop CSV files here or click "Add Files"</p>';
     html += '</div>';
   } else {
     // Toolbar: select all + count
@@ -443,6 +444,7 @@ function toggleBulkFile(index, checked) {
   bulkCsvFiles[index].checked = checked;
   const body = document.getElementById('modalBody');
   body.innerHTML = renderBulkUploadUI();
+  initBulkDropZone();
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -450,6 +452,7 @@ function toggleBulkSelectAll(checked) {
   bulkCsvFiles.forEach(f => f.checked = checked);
   const body = document.getElementById('modalBody');
   body.innerHTML = renderBulkUploadUI();
+  initBulkDropZone();
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -566,6 +569,7 @@ function removeBulkFile(index) {
   bulkCsvFiles.splice(index, 1);
   const body = document.getElementById('modalBody');
   body.innerHTML = renderBulkUploadUI();
+  initBulkDropZone();
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -632,6 +636,77 @@ function selectBulkCsv(index) {
   content.innerHTML = renderPitchMapping(file.data);
   if (pitchBalls.length > 0) selectBall(0);
 }
+
+// ---- Drag & Drop ----
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function handleDragOver(e) {
+  preventDefaults(e);
+  e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+  preventDefaults(e);
+  e.currentTarget.classList.remove('drag-over');
+}
+
+// Single CSV drop on main content area
+function handleSingleDrop(e) {
+  preventDefaults(e);
+  e.currentTarget.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.name.toLowerCase().endsWith('.csv')) return;
+  // Reuse the upload handler by faking the event
+  const fakeEvent = { target: { files: [file], value: '' } };
+  handleCsvUpload(fakeEvent);
+}
+
+// Bulk CSV drop on modal body
+function handleBulkDrop(e) {
+  preventDefaults(e);
+  e.currentTarget.classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.csv'));
+  if (files.length === 0) return;
+
+  let loaded = 0;
+  files.forEach(file => {
+    if (bulkCsvFiles.some(f => f.name === file.name)) { loaded++; return; }
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      bulkCsvFiles.push({ name: file.name, data: ev.target.result, checked: true });
+      loaded++;
+      if (loaded === files.length) {
+        const body = document.getElementById('modalBody');
+        body.innerHTML = renderBulkUploadUI();
+        initBulkDropZone();
+        if (window.lucide) window.lucide.createIcons();
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
+function initBulkDropZone() {
+  const dropZone = document.getElementById('bulkDropZone');
+  if (!dropZone) return;
+  ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, handleDragOver));
+  ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, handleDragLeave));
+  dropZone.addEventListener('drop', handleBulkDrop);
+}
+
+// Init drag-drop on main content area
+function initMainDropZone() {
+  const content = document.getElementById('content');
+  if (!content) return;
+  ['dragenter', 'dragover'].forEach(evt => content.addEventListener(evt, handleDragOver));
+  ['dragleave', 'drop'].forEach(evt => content.addEventListener(evt, handleDragLeave));
+  content.addEventListener('drop', handleSingleDrop);
+}
+
+document.addEventListener('DOMContentLoaded', initMainDropZone);
 
 // ---- Init ----
 navigate(BASE_PATH);

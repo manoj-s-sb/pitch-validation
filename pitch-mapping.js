@@ -1,3 +1,19 @@
+function showCopyToast(msg) {
+  const existing = document.querySelector('.copy-toast-global');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'copy-toast-global';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 1500);
+}
+
+function copyCellValue(el, value) {
+  navigator.clipboard.writeText(value).then(() => {
+    showCopyToast('Video URL copied successfully!');
+  });
+}
+
 // ---- CSV Parser & Table Renderer ----
 function parseCSV(text) {
   const rows = [];
@@ -50,7 +66,12 @@ function renderCSVTable(csvText) {
     html += `<tr><td class="csv-row-num">${i + 1}</td>`;
     headers.forEach((_, ci) => {
       const val = row[ci] !== undefined ? row[ci] : '';
-      html += `<td title="${escapeHtml(val)}">${escapeHtml(val)}</td>`;
+      const isUrl = /^https?:\/\//i.test(val);
+      if (isUrl) {
+        html += `<td title="${escapeHtml(val)}" class="csv-url-cell" onclick="copyCellValue(this, '${escapeHtml(val).replace(/'/g, "\\'")}')"><span class="csv-url-text">${escapeHtml(val)}</span><span class="csv-url-icon"><i data-lucide="copy" style="width:12px;height:12px;"></i></span></td>`;
+      } else {
+        html += `<td title="${escapeHtml(val)}">${escapeHtml(val)}</td>`;
+      }
     });
     html += '</tr>';
   });
@@ -325,8 +346,14 @@ function selectBall(index) {
   html += '<div class="pitch-detail-section">';
   html += '<h4>Video</h4>';
   if (ball.videoUrl && ball.videoUrl.trim()) {
+    const videoSrc = escapeHtml(ball.videoUrl.trim());
     html += `<div class="pitch-video-wrap">
-      <video controls src="${escapeHtml(ball.videoUrl.trim())}" style="width:100%; max-height:280px;"></video>
+      <video controls src="${videoSrc}" style="width:100%; max-height:280px;"></video>
+    </div>`;
+    html += `<div style="margin-top:8px; display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; cursor:pointer;" onclick="navigator.clipboard.writeText('${videoSrc.replace(/'/g, "\\'")}'); showCopyToast('Video URL copied successfully!');" title="Click to copy video URL">
+      <i data-lucide="link" style="width:14px; height:14px; color:var(--text-dim); flex-shrink:0;"></i>
+      <span style="flex:1; font-size:12px; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${videoSrc}</span>
+      <span style="font-size:11px; font-weight:600; color:var(--accent); flex-shrink:0;">Click to copy</span>
     </div>`;
   } else {
     html += '<div class="pitch-no-video">No video available for this ball</div>';

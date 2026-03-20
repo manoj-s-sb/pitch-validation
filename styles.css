@@ -208,7 +208,17 @@ body {
 .csv-table { border-collapse: collapse; font-size: 14px; white-space: nowrap; width: 100%; }
 .csv-table thead { position: sticky; top: 0; z-index: 10; }
 .csv-table th { background: var(--surface2); color: var(--text-dim); padding: 14px 20px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-solid); }
-.csv-table td { padding: 12px 20px; border-bottom: 1px solid var(--border); color: var(--text); max-width: 300px; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; }
+.csv-table td { padding: 12px 20px; border-bottom: 1px solid var(--border); color: var(--text); max-width: 300px; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; position: relative; }
+
+/* URL cells - clickable to copy */
+.csv-url-cell { cursor: pointer; color: var(--accent); }
+.csv-url-cell:hover { background: var(--accent-glow) !important; }
+.csv-url-cell .csv-url-text { overflow: hidden; text-overflow: ellipsis; }
+.csv-url-cell .csv-url-icon { display: none; margin-left: 6px; color: var(--accent); vertical-align: middle; }
+.csv-url-cell:hover .csv-url-icon { display: inline; }
+/* Global copy toast */
+.copy-toast-global { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #16a34a; color: #fff; padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; white-space: nowrap; pointer-events: none; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: toastIn 1.5s ease forwards; }
+@keyframes toastIn { 0% { opacity: 0; transform: translateX(-50%) translateY(-10px); } 10% { opacity: 1; transform: translateX(-50%) translateY(0); } 75% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
 .csv-table tr { transition: background 0.2s; }
 .csv-table tr:hover td { background: var(--surface2); }
 .csv-table tr:nth-child(even) td { background: #fafafa; }
@@ -219,6 +229,9 @@ body {
 .primary-btn { background: var(--accent) !important; color: #fff !important; border: none !important; padding: 10px 24px !important; border-radius: 8px !important; font-weight: 500 !important; }
 .primary-btn:hover { background: var(--accent-hover) !important; color: #fff !important; }
 .primary-btn:active { transform: translateY(1px) !important; box-shadow: none !important; }
+
+/* Drag & Drop */
+.drag-over { outline: 3px dashed var(--accent) !important; outline-offset: -3px; background: var(--accent-glow) !important; }
 
 /* Responsive */
 @media (max-width: 768px) {
