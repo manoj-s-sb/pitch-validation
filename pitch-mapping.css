@@ -47,6 +47,36 @@
 }
 .pitch-ball-dot.selected .ball-num { font-size: 11px; }
 
+/* Config ball - rectangular box with red dot inside */
+.pitch-ball-dot.config-ball {
+  width: 44px;
+  height: 54px;
+  border-radius: 8px;
+  background: rgba(33, 41, 90, 0.5);
+  border: 2px solid #fff;
+}
+.pitch-ball-dot.config-ball::after { display: none; }
+.pitch-ball-dot.config-ball::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ef4444;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.pitch-ball-dot.config-ball.selected {
+  width: 48px;
+  height: 58px;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3), 0 4px 10px rgba(0,0,0,0.2);
+}
+.pitch-ball-dot.config-ball .ball-num {
+  z-index: 3;
+}
+
 /* Actual pitching point - blue ball */
 .pitch-ball-dot.actual-ball {
   background: #3b82f6; /* Clean flat blue */
