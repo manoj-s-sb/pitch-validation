@@ -487,6 +487,7 @@ function processSessionBalls(csvData, sessionName) {
     meta.lane,
     meta.date,
     sessionId ? '"' + sessionId.replace(/"/g, '""') + '"' : '',
+    balls.length,
     // Speed
     r(avgCfgSpd), r(avgRelSpd), r(spdDiff), r(spdErrPct),
     // X
@@ -498,7 +499,7 @@ function processSessionBalls(csvData, sessionName) {
 
 function generateSessionReport() {
   const headers = [
-    'Lane Number', 'Session Date', 'Session ID',
+    'Lane Number', 'Session Date', 'Session ID', 'Balls Played',
     'User Selected Speed (km/h)', 'Machine Released Speed (km/h)', 'Speed Variance (km/h)', 'Speed Accuracy Loss (%)',
     'User Selected X (cm)', 'Machine Bowled X (cm)', 'X Variance (cm)', 'X Accuracy Loss (%)',
     'User Selected Y (cm)', 'Machine Bowled Y (cm)', 'Y Variance (cm)', 'Y Accuracy Loss (%)'
