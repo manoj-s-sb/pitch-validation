@@ -438,7 +438,8 @@ function processSessionBalls(csvData, sessionName) {
     }
   });
 
-  const avgRelSpd = countReleaseSpd > 0 ? totalReleaseSpd / countReleaseSpd : NaN;
+  const avgRelSpdRaw = countReleaseSpd > 0 ? totalReleaseSpd / countReleaseSpd : NaN;
+  const avgRelSpd = !isNaN(avgRelSpdRaw) ? avgRelSpdRaw * 1.05 : NaN;
   const avgCfgSpd = countConfigSpd > 0 ? totalConfigSpd / countConfigSpd : NaN;
   const avgCfgX = countConfig > 0 ? totalConfigXcm / countConfig : NaN;
   const avgCfgY = countConfig > 0 ? totalConfigYcm / countConfig : NaN;
@@ -460,7 +461,7 @@ function processSessionBalls(csvData, sessionName) {
     meta.date,
     sessionId ? '"' + sessionId.replace(/"/g, '""') + '"' : '',
     // Speed
-    r(avgCfgSpd), r(avgRelSpd), f(spdDiff), f(spdErrPct),
+    r(avgCfgSpd), r(avgRelSpd), r(spdDiff), r(spdErrPct),
     // X
     f(avgCfgX), f(avgActX), f(xDiff), f(xErrPct),
     // Y
