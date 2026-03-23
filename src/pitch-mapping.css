@@ -1,0 +1,387 @@
+/* Pitch Mapping Layout */
+.pitch-mapping {
+  width: 100%;
+  align-self: stretch;
+  overflow: auto;
+  padding: 12px;
+  display: flex;
+  gap: 24px;
+}
+
+/* Visual Pitch */
+.pitch-visual-wrap {
+  flex-shrink: 0;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  height: 75vh;
+}
+.pitch-line-labels {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+.pitch-canvas {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 500px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.pitch-length-band {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+.pitch-length-band span {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+.pitch-lane-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+/* Ball dots - cricket ball style */
+.pitch-ball-dot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ef4444; /* Clean flat red */
+  border: 2px solid #fff;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+/* Seam line */
+.pitch-ball-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  transform: translateY(-50%) rotate(-15deg);
+}
+.pitch-ball-dot:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.pitch-ball-dot .ball-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--surface);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  z-index: 20;
+  font-weight: 500;
+}
+.pitch-ball-dot:hover .ball-tooltip {
+  display: block;
+}
+.pitch-ball-dot.selected {
+  width: 24px;
+  height: 24px;
+  z-index: 10;
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.pitch-ball-dot.selected .ball-num {
+  font-size: 11px;
+}
+
+/* Config ball - rectangular box with red dot inside */
+.pitch-ball-dot.config-ball {
+  width: 44px;
+  height: 54px;
+  border-radius: 8px;
+  background: rgba(33, 41, 90, 0.5);
+  border: 2px solid #fff;
+}
+.pitch-ball-dot.config-ball::after {
+  display: none;
+}
+.pitch-ball-dot.config-ball::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ef4444;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.pitch-ball-dot.config-ball.selected {
+  width: 48px;
+  height: 58px;
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.pitch-ball-dot.config-ball .ball-num {
+  z-index: 3;
+}
+
+/* Actual pitching point - blue ball */
+.pitch-ball-dot.actual-ball {
+  background: #3b82f6; /* Clean flat blue */
+}
+.pitch-ball-dot.actual-ball.selected {
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+/* Ball number label */
+.pitch-ball-dot .ball-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  z-index: 2;
+}
+
+/* Stumps */
+.pitch-stumps {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+.pitch-stumps .stump {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.7;
+}
+
+/* Ball selector buttons */
+.ball-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-solid);
+  margin-bottom: 16px;
+}
+.ball-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--border-solid);
+  background: var(--surface-solid);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.ball-selector-btn:hover {
+  border-color: var(--accent);
+  background: var(--surface2-solid);
+}
+.ball-selector-btn.active {
+  border-color: var(--accent);
+  background: rgba(108, 140, 255, 0.15);
+  color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.ball-selector-btn .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 35% 35%, #ff4444, #cc0000);
+  border: 1px solid #8b0000;
+}
+
+/* Detail panel */
+.pitch-detail-panel {
+  flex: 1;
+  overflow: auto;
+  max-height: 82vh;
+}
+.pitch-detail-section {
+  margin-bottom: 16px;
+}
+.pitch-detail-section h4 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+/* Info cards */
+.pitch-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+.pitch-info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.pitch-info-card .label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.pitch-info-card .value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.pitch-info-card .value.speed-val {
+  color: var(--text);
+}
+.pitch-info-card .value.line-val {
+  color: var(--text);
+}
+.pitch-info-card .value.length-val {
+  color: var(--text);
+}
+
+/* Param Table (Set vs Read) */
+.param-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.param-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+.param-table th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-solid);
+}
+.param-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 500;
+}
+.param-table tr:last-child td {
+  border-bottom: none;
+}
+.param-table tr:hover td {
+  background: var(--surface2);
+}
+.param-table .param-name {
+  font-weight: 600;
+  color: var(--text-dim);
+  width: 25%;
+}
+
+.pitch-diff.badge {
+  display: inline-block;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+.pitch-diff.badge.match {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+.pitch-diff.badge.off {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #fef08a;
+}
+.pitch-diff.badge.bad {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+/* Video */
+.pitch-video-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-solid);
+  background: #000;
+}
+.pitch-video-wrap video {
+  width: 100%;
+  max-height: 250px;
+  display: block;
+}
+.pitch-no-video {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .pitch-mapping {
+    flex-direction: column;
+  }
+  .pitch-visual-wrap {
+    width: 100%;
+    min-height: 400px;
+  }
+}
