@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'lucide-react';
 import { parsePitchBalls, getLineLabel, getLengthLabel, LENGTH_BANDS, PITCH_PARAMS } from '../utils/pitch';
 
@@ -14,14 +14,14 @@ function showCopyToast(msg) {
 
 export default function PitchMapping({ csvText }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(true);
   const [pitchData, setPitchData] = useState({ balls: [], colIdx: {} });
 
   useEffect(() => {
     const data = parsePitchBalls(csvText);
     setPitchData(data);
     setSelectedIndex(0);
-    setShowAll(false);
+    setShowAll(true);
   }, [csvText]);
 
   const { balls, colIdx } = pitchData;
@@ -450,56 +450,110 @@ function BallDetail({ ball, colIdx }) {
 }
 
 function AllBallsDetail({ balls, colIdx }) {
+  const isRPM = (label) => label === 'L-RPM' || label === 'R-RPM';
+
+  const availableParams = PITCH_PARAMS.filter((p) => {
+    return colIdx[p.setCol] !== undefined || colIdx[p.readCol] !== undefined;
+  });
+
   return (
     <div className="pitch-detail-section">
       <h4>All Balls Overview</h4>
       <div style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 12 }}>
-        Showing all {balls.length} actual pitching points (blue) with config position (red)
+        Showing all {balls.length} balls — config (red) vs actual (blue)
       </div>
       <div className="param-table-wrap">
         <table className="param-table">
           <thead>
+            {/* Top header row with grouped columns */}
             <tr>
-              <th>Ball</th>
-              <th>
-                Release Speed
-                <br />
-                <span style={{ fontSize: 9, fontWeight: 400, opacity: 0.7 }}>Actual</span>
-              </th>
-              <th>
-                Speed
-                <br />
-                <span style={{ fontSize: 9, fontWeight: 400, opacity: 0.7 }}>Config</span>
-              </th>
-              {PITCH_PARAMS.map((p) => (
-                <th key={p.label}>
+              <th rowSpan={2} style={{ verticalAlign: 'bottom' }}>Ball</th>
+              <th colSpan={3} style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}>Speed (km/h)</th>
+              {availableParams.map((p) => (
+                <th
+                  key={p.label}
+                  colSpan={isRPM(p.label) ? 2 : 3}
+                  style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}
+                >
                   {p.label}
-                  <br />
-                  <span style={{ fontSize: 9, fontWeight: 400, opacity: 0.7 }}>Set / Read</span>
+                  {isRPM(p.label) && <span style={{ fontSize: 9, color: '#ef4444', marginLeft: 2 }}>*</span>}
                 </th>
               ))}
+            </tr>
+            {/* Sub header row */}
+            <tr>
+              <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
+              <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Actual</th>
+              <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Diff</th>
+              {availableParams.map((p) =>
+                isRPM(p.label) ? (
+                  <React.Fragment key={p.label + '-sub'}>
+                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
+                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Read</th>
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment key={p.label + '-sub'}>
+                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
+                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Read</th>
+                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Diff</th>
+                  </React.Fragment>
+                ),
+              )}
             </tr>
           </thead>
           <tbody>
             {balls.map((ball) => {
+              // Speed
               const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
-              const relSpdVal = !isNaN(releaseSpd) ? Math.round(releaseSpd) + ' km/h' : '-';
-              const pitchSpd = parseFloat(ball.speed);
-              const spdVal = !isNaN(pitchSpd) ? Math.round(pitchSpd) + ' km/h' : '-';
+              const relVal = !isNaN(releaseSpd) ? Math.round(releaseSpd) : NaN;
+              const cfgSpd = parseFloat(ball.speed);
+              const cfgVal = !isNaN(cfgSpd) ? Math.round(cfgSpd) : NaN;
+              const hasSpdDiff = !isNaN(relVal) && !isNaN(cfgVal);
+              const spdDiff = hasSpdDiff ? relVal - cfgVal : 0;
+              const absSpdDiff = Math.abs(spdDiff);
+              const spdClass = hasSpdDiff ? (absSpdDiff === 0 ? 'match' : absSpdDiff <= 5 ? 'off' : 'bad') : '';
+              const spdLabel = hasSpdDiff ? (absSpdDiff === 0 ? '0' : (spdDiff > 0 ? '+' : '') + spdDiff) : '-';
+
               return (
                 <tr key={ball.index}>
-                  <td className="param-name">Ball {String(ball.ballId)}</td>
-                  <td>{relSpdVal}</td>
-                  <td>{spdVal}</td>
-                  {PITCH_PARAMS.map((param) => {
+                  <td className="param-name">{String(ball.ballId)}</td>
+                  {/* Speed cells */}
+                  <td style={{ textAlign: 'center' }}>{!isNaN(cfgVal) ? cfgVal : '-'}</td>
+                  <td style={{ textAlign: 'center' }}>{!isNaN(relVal) ? relVal : '-'}</td>
+                  <td style={{ textAlign: 'center' }}>
+                    {hasSpdDiff ? <span className={`pitch-diff badge ${spdClass}`}>{spdLabel}</span> : '-'}
+                  </td>
+                  {/* Param cells */}
+                  {availableParams.map((param) => {
                     const setIdx = colIdx[param.setCol];
                     const readIdx = colIdx[param.readCol];
                     const setVal = setIdx !== undefined ? ball.row[setIdx] || '-' : '-';
                     const readVal = readIdx !== undefined ? ball.row[readIdx] || '-' : '-';
-                    return (
-                      <td key={param.label}>
-                        {setVal} / {readVal}
-                      </td>
+                    const rpm = isRPM(param.label);
+                    const setNum = parseFloat(setVal);
+                    const readNum = parseFloat(readVal);
+                    const hasDiff = !rpm && !isNaN(setNum) && !isNaN(readNum);
+                    const diff = hasDiff ? Math.abs(setNum - readNum) : 0;
+                    const diffClass = hasDiff ? (diff === 0 ? 'match' : diff <= 50 ? 'off' : 'bad') : '';
+                    const diffLabel = hasDiff
+                      ? diff === 0
+                        ? '0'
+                        : (setNum > readNum ? '-' : '+') + diff.toFixed(0)
+                      : '-';
+
+                    return rpm ? (
+                      <React.Fragment key={param.label}>
+                        <td style={{ textAlign: 'center' }}>{setVal}</td>
+                        <td style={{ textAlign: 'center', color: 'var(--text-dim)', fontStyle: 'italic' }}>{readVal}</td>
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment key={param.label}>
+                        <td style={{ textAlign: 'center' }}>{setVal}</td>
+                        <td style={{ textAlign: 'center' }}>{readVal}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          {hasDiff ? <span className={`pitch-diff badge ${diffClass}`}>{diffLabel}</span> : '-'}
+                        </td>
+                      </React.Fragment>
                     );
                   })}
                 </tr>
@@ -507,6 +561,9 @@ function AllBallsDetail({ balls, colIdx }) {
             })}
           </tbody>
         </table>
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 8, fontStyle: 'italic' }}>
+        * RPM read values may not be accurate — diff not computed
       </div>
     </div>
   );

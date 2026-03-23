@@ -1,0 +1,65 @@
+{
+  // Format & Lint on save
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Language-specific formatters
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // ESLint
+  "eslint.validate": ["javascript", "javascriptreact"],
+
+  // File associations
+  "files.associations": {
+    "*.jsx": "javascriptreact",
+    "*.css": "css"
+  },
+
+  // Exclude clutter from explorer & search
+  "files.exclude": {
+    "node_modules": true,
+    "dist": true,
+    ".vite": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "dist": true,
+    "package-lock.json": true,
+    "_vanilla": true
+  },
+
+  // Editor basics
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.linkedEditing": true,
+  "editor.wordWrap": "on",
+
+  // Emmet for JSX
+  "emmet.includeLanguages": {
+    "javascriptreact": "html"
+  },
+
+  // Files
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}
