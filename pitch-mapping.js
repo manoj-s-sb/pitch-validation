@@ -236,7 +236,7 @@ function renderPitchMapping(csvText) {
     All
   </button>`;
   pitchBalls.forEach((ball, i) => {
-    const releaseSpd = parseFloat(ball.releaseSpeed);
+    const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
     const spdText = !isNaN(releaseSpd) ? ` (${Math.round(releaseSpd)} km/h)` : '';
     html += `<button class="ball-selector-btn ${i === 0 ? 'active' : ''}" id="ball-btn-${i}" onclick="selectBall(${i})">
       <span class="dot" style="background:#ef4444; border:none; box-shadow:0 1px 2px rgba(0,0,0,0.1);"></span>
@@ -271,7 +271,7 @@ function selectBall(index) {
   if (configDot) { configDot.style.display = ''; configDot.classList.add('selected'); }
   if (actualDot) { actualDot.style.display = ''; actualDot.classList.add('selected'); }
 
-  const releaseSpd = parseFloat(ball.releaseSpeed);
+  const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
   const spdVal = !isNaN(releaseSpd) ? Math.round(releaseSpd) : '-';
   const pitchSpd = parseFloat(ball.speed);
   const pitchSpdVal = !isNaN(pitchSpd) ? Math.round(pitchSpd) : '-';
@@ -396,7 +396,7 @@ function selectAllBalls() {
   PITCH_PARAMS.forEach(p => { html += `<th>${escapeHtml(p.label)}<br><span style="font-size:9px;font-weight:400;opacity:0.7;">Set / Read</span></th>`; });
   html += '</tr></thead><tbody>';
   pitchBalls.forEach(ball => {
-    const releaseSpd = parseFloat(ball.releaseSpeed);
+    const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
     const relSpdVal = !isNaN(releaseSpd) ? Math.round(releaseSpd) + ' km/h' : '-';
     const pitchSpd = parseFloat(ball.speed);
     const spdVal = !isNaN(pitchSpd) ? Math.round(pitchSpd) + ' km/h' : '-';
