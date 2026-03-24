@@ -1,5 +1,5 @@
 import { Copy } from 'lucide-react';
-import { parseCSV } from '../utils/csv';
+import { parseCSV } from '../../../utils/csv';
 
 function showCopyToast(msg) {
   const existing = document.querySelector('.copy-toast-global');

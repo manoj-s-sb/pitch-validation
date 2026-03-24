@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'lucide-react';
-import { parsePitchBalls, getLineLabel, getLengthLabel, LENGTH_BANDS, PITCH_PARAMS } from '../utils/pitch';
+import { parsePitchBalls, getLineLabel, getLengthLabel, LENGTH_BANDS, PITCH_PARAMS } from '../../../utils/pitch';
 
 function showCopyToast(msg) {
   const existing = document.querySelector('.copy-toast-global');

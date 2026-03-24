@@ -1,0 +1,233 @@
+/* NOC Page */
+.noc-page {
+  padding: 32px 40px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+
+/* Page Header */
+.noc-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.noc-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.noc-subtitle {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* Live badge */
+.noc-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.noc-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: noc-pulse 2s ease-in-out infinite;
+}
+@keyframes noc-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+.noc-live-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #22c55e;
+  letter-spacing: 0.5px;
+}
+.noc-live-time {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+/* Tabs */
+.noc-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.noc-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.noc-tab:hover {
+  color: var(--text);
+  background: var(--surface2);
+}
+.noc-tab.active {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--text);
+}
+
+/* Facility */
+.noc-facility {
+  margin-bottom: 48px;
+}
+.noc-facility-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.noc-facility-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+.noc-facility-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* Lane Grid */
+.noc-lane-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* Lane Card */
+.noc-lane-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: all 0.2s;
+}
+.noc-lane-card:hover {
+  box-shadow: var(--shadow);
+  border-color: var(--border-solid);
+}
+.noc-lane-card.noc-lane-offline {
+  border-left: 3px solid #ef4444;
+}
+.noc-lane-card.noc-lane-warning {
+  border-left: 3px solid #f59e0b;
+}
+
+.noc-lane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.noc-lane-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.noc-lane-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.noc-lane-type {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+.noc-lane-status-label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Device Grid */
+.noc-device-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px 16px;
+}
+.noc-device {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 400;
+  padding: 4px 0;
+}
+.noc-device-icon {
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.noc-device-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status dot */
+.noc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .noc-lane-grid {
+    grid-template-columns: 1fr;
+  }
+  .noc-device-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .noc-page {
+    padding: 20px 16px;
+  }
+  .noc-page-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .noc-facility-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

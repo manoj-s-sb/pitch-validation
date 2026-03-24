@@ -1,5 +1,5 @@
 import { Folder, Image, Video, Music, FileText, FileCode, Archive, File, FolderOpen } from 'lucide-react';
-import { getFileType } from '../utils/files';
+import { getFileType } from '../../../utils/files';
 
 const iconMap = {
   folder: { Icon: Folder, color: 'var(--folder)' },
