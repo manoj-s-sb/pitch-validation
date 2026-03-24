@@ -176,8 +176,8 @@
 /* Device Grid */
 .noc-device-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px 16px;
+  grid-template-columns: repeat(5, auto);
+  gap: 8px 24px;
 }
 .noc-device {
   display: flex;
@@ -193,10 +193,7 @@
   flex-shrink: 0;
 }
 .noc-device-name {
-  flex: 1;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* Status dot */
@@ -215,7 +212,7 @@
     grid-template-columns: 1fr;
   }
   .noc-device-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, auto);
   }
 }
 @media (max-width: 768px) {

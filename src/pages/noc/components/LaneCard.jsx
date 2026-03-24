@@ -1,21 +1,10 @@
-import {
-  Zap,
-  Camera,
-  Monitor,
-  Smartphone,
-  Tablet,
-  LayoutGrid,
-  Server,
-} from 'lucide-react';
+import { Zap, Camera, Monitor, Tablet } from 'lucide-react';
 
 const iconMap = {
   zap: Zap,
   camera: Camera,
   monitor: Monitor,
-  smartphone: Smartphone,
   tablet: Tablet,
-  'layout-grid': LayoutGrid,
-  server: Server,
 };
 
 const statusColor = {
@@ -72,7 +61,7 @@ export default function LaneCard({ lane }) {
       </div>
       <div className="noc-device-grid">
         {lane.devices.map((device, i) => {
-          const Icon = iconMap[device.icon] || Server;
+          const Icon = iconMap[device.icon] || Monitor;
           return (
             <div key={i} className="noc-device">
               <Icon size={14} strokeWidth={1.6} className="noc-device-icon" />
