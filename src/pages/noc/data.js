@@ -25,8 +25,8 @@ function devices(overrides = {}) {
 
 export const facilities = [
   {
-    id: 'us',
-    name: 'US Facility',
+    id: 'houston',
+    name: 'Houston',
     flag: 'us',
     lanes: [
       { id: 1, name: 'Lane 1', type: 'Batting', devices: devices({ 'CV Right Cam': 'offline' }) },
@@ -39,8 +39,8 @@ export const facilities = [
     ],
   },
   {
-    id: 'india',
-    name: 'India Facility',
+    id: 'bangalore',
+    name: 'Bangalore',
     flag: 'in',
     lanes: [
       { id: 1, name: 'Lane 1', type: 'Batting', devices: devices() },

@@ -1,4 +1,4 @@
-import { Zap, Camera, Monitor, Tablet } from 'lucide-react';
+import { Zap, Camera, Monitor, Tablet, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 
 const iconMap = {
   zap: Zap,
@@ -7,69 +7,72 @@ const iconMap = {
   tablet: Tablet,
 };
 
-const statusColor = {
-  online: '#22c55e',
-  offline: '#ef4444',
-  warning: '#f59e0b',
+const statusConfig = {
+  online: { color: '#22c55e', bg: 'rgba(34,197,94,0.08)', icon: CheckCircle2, label: 'Online' },
+  offline: { color: '#ef4444', bg: 'rgba(239,68,68,0.08)', icon: XCircle, label: 'Offline' },
+  warning: { color: '#f59e0b', bg: 'rgba(245,158,11,0.08)', icon: AlertTriangle, label: 'Warning' },
 };
 
-function getLaneStatus(devices) {
-  const hasOffline = devices.some((d) => d.status === 'offline');
-  const hasWarning = devices.some((d) => d.status === 'warning');
-  if (hasOffline) return 'offline';
-  if (hasWarning) return 'warning';
+function getLaneOverall(devices) {
+  const off = devices.filter((d) => d.status === 'offline').length;
+  const warn = devices.filter((d) => d.status === 'warning').length;
+  if (off > 0) return 'offline';
+  if (warn > 0) return 'warning';
   return 'online';
 }
 
-function getLaneStatusLabel(devices) {
-  const offline = devices.filter((d) => d.status === 'offline').length;
-  const warning = devices.filter((d) => d.status === 'warning').length;
-  if (offline === 0 && warning === 0) return { text: 'All Systems Online', color: '#22c55e' };
-  const parts = [];
-  if (offline > 0) parts.push({ text: `${offline} Offline`, color: '#ef4444' });
-  if (warning > 0) parts.push({ text: `${warning} Warning`, color: '#f59e0b' });
-  return parts;
-}
-
 export default function LaneCard({ lane }) {
-  const laneStatus = getLaneStatus(lane.devices);
-  const statusLabel = getLaneStatusLabel(lane.devices);
-  const isAllGood = !Array.isArray(statusLabel);
+  const overall = getLaneOverall(lane.devices);
+  const cfg = statusConfig[overall];
+  const onlineCount = lane.devices.filter((d) => d.status === 'online').length;
 
   return (
-    <div className={`noc-lane-card noc-lane-${laneStatus}`}>
-      <div className="noc-lane-header">
-        <div className="noc-lane-title">
-          <span className="noc-lane-name">{lane.name}</span>
-          <span className="noc-lane-type">{lane.type}</span>
+    <div className="noc-card">
+      {/* Card top accent */}
+      <div className="noc-card-accent" style={{ background: cfg.color }} />
+
+      <div className="noc-card-body">
+        {/* Header */}
+        <div className="noc-card-header">
+          <div className="noc-card-title-row">
+            <h3 className="noc-card-name">{lane.name}</h3>
+            <span className="noc-card-type">{lane.type}</span>
+          </div>
+          <div className="noc-card-status" style={{ color: cfg.color, background: cfg.bg }}>
+            <cfg.icon size={13} />
+            {overall === 'online'
+              ? 'All Online'
+              : `${lane.devices.filter((d) => d.status === overall).length} ${cfg.label}`}
+          </div>
         </div>
-        <div className="noc-lane-status-label">
-          {isAllGood ? (
-            <span style={{ color: statusLabel.color, fontSize: 12, fontWeight: 600 }}>
-              <span className="noc-dot" style={{ background: statusLabel.color }} />
-              {statusLabel.text}
-            </span>
-          ) : (
-            statusLabel.map((s, i) => (
-              <span key={i} style={{ color: s.color, fontSize: 12, fontWeight: 600 }}>
-                <span className="noc-dot" style={{ background: s.color }} />
-                {s.text}
-              </span>
-            ))
-          )}
+
+        {/* Health bar */}
+        <div className="noc-card-healthbar">
+          <div className="noc-card-healthbar-fill" style={{ width: `${(onlineCount / lane.devices.length) * 100}%` }} />
         </div>
-      </div>
-      <div className="noc-device-grid">
-        {lane.devices.map((device, i) => {
-          const Icon = iconMap[device.icon] || Monitor;
-          return (
-            <div key={i} className="noc-device">
-              <Icon size={14} strokeWidth={1.6} className="noc-device-icon" />
-              <span className="noc-device-name">{device.name}</span>
-              <span className="noc-dot" style={{ background: statusColor[device.status] }} />
-            </div>
-          );
-        })}
+        <div className="noc-card-health-label">
+          {onlineCount}/{lane.devices.length} systems operational
+        </div>
+
+        {/* Devices */}
+        <div className="noc-card-devices">
+          {lane.devices.map((device, i) => {
+            const Icon = iconMap[device.icon] || Monitor;
+            const st = statusConfig[device.status];
+            return (
+              <div key={i} className={`noc-card-device noc-card-device-${device.status}`}>
+                <div className="noc-card-device-left">
+                  <div className="noc-card-device-indicator" style={{ background: st.color }} />
+                  <Icon size={15} strokeWidth={1.7} />
+                  <span className="noc-card-device-name">{device.name}</span>
+                </div>
+                <span className="noc-card-device-badge" style={{ color: st.color, background: st.bg }}>
+                  {st.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
