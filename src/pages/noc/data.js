@@ -1,55 +1,56 @@
 // Mock data — replace with real API calls later
 
-function devices(overrides = {}) {
-  const defaults = {
-    'Bowling Machine': 'online',
-    'CV Left Cam': 'online',
-    'CV Right Cam': 'online',
-    'Display': 'online',
-    'Tablets': 'online',
-  };
-  const merged = { ...defaults, ...overrides };
-  const iconMap = {
-    'Bowling Machine': 'zap',
-    'CV Left Cam': 'camera',
-    'CV Right Cam': 'camera',
-    'Display': 'monitor',
-    'Tablets': 'tablet',
-  };
-  return Object.entries(merged).map(([name, status]) => ({
-    name,
-    icon: iconMap[name],
-    status,
-  }));
+function laneDevices(n, overrides = {}) {
+  const p = String(n).padStart(2, '0');
+  const base = [
+    { key: 'switch',  name: `Lane ${n} PoE Switch`, id: `SW:${p}:F0`, type: 'poeswitch', iface: 'ETH',  ip: `192.168.20.${n}`,      loc: `Lane ${n}`,        uptime: '12d 3h', icon: 'switch'  },
+    { key: 'pc',      name: `Lane ${n} Mini-PC`,    id: `PC:${p}:A1`, type: 'pc',        iface: 'ETH',  ip: `192.168.10.${n}`,      loc: `Lane ${n}`,        uptime: '12d 3h', icon: 'server'  },
+    { key: 'display', name: `Lane ${n} Display`,    id: `DP:${p}:B2`, type: 'display',   iface: 'HDMI', ip: '—',                    loc: `Lane ${n}`,        uptime: '12d 3h', icon: 'monitor' },
+    { key: 'bowling', name: `Lane ${n} Bowling`,    id: `BW:${p}:C3`, type: 'bowling',   iface: 'ETH',  ip: `192.168.10.${n + 20}`, loc: `Lane ${n}`,        uptime: '12d 3h', icon: 'zap'     },
+    { key: 'tablet',  name: `Lane ${n} Tablet`,     id: `TB:${p}:D4`, type: 'tablet',    iface: 'WIFI', ip: `192.168.30.${n}`,      loc: `Lane ${n} (WiFi)`, uptime: '12d 3h', icon: 'tablet'  },
+    { key: 'cama',    name: `Lane ${n} Cam A`,      id: `CA:${p}:E5`, type: 'camera',    iface: 'ETH',  ip: `192.168.40.${n}`,      loc: `Lane ${n}`,        uptime: '12d 3h', icon: 'camera'  },
+    { key: 'camb',    name: `Lane ${n} Cam B`,      id: `CB:${p}:F6`, type: 'camera',    iface: 'ETH',  ip: `192.168.40.${n + 10}`, loc: `Lane ${n}`,        uptime: '12d 3h', icon: 'camera'  },
+  ];
+  return base.map(d => ({ ...d, status: overrides[d.key] ?? 'online' }));
 }
+
+const infrastructure = [
+  { name: 'Server-Room SW48',    id: 'A0:B1:C4', type: 'switch',  iface: 'ETH',  ip: '192.168.1.3',  loc: 'Server Rack', uptime: '42d 5h', icon: 'switch',  status: 'online'  },
+  { name: 'Core PoE Switch',     id: 'A0:B1:C5', type: 'switch',  iface: 'ETH',  ip: '192.168.1.4',  loc: 'Server Rack', uptime: '41d 2h', icon: 'switch',  status: 'warning' },
+  { name: 'Server-01 (Primary)', id: 'DE:AD:01', type: 'server',  iface: 'ETH',  ip: '192.168.1.10', loc: 'Server Rack', uptime: '39d 4h', icon: 'server',  status: 'online'  },
+  { name: 'Server-02 (Backup)',  id: 'DE:AD:02', type: 'server',  iface: 'ETH',  ip: '192.168.1.11', loc: 'Server Rack', uptime: '39d 4h', icon: 'server',  status: 'online'  },
+  { name: 'AP Router (Shared)',  id: 'AP:00:01', type: 'router',  iface: 'WIFI', ip: '192.168.30.1', loc: 'Server Rack', uptime: '42d 5h', icon: 'router',  status: 'online'  },
+];
 
 export const facilities = [
   {
-    id: 'houston',
+    id: 'HOU01',
     name: 'Houston',
     flag: 'us',
+    infrastructure,
     lanes: [
-      { id: 1, name: 'Lane 1', type: 'Batting', devices: devices({ 'CV Right Cam': 'offline' }) },
-      { id: 2, name: 'Lane 2', type: 'Batting', devices: devices() },
-      { id: 3, name: 'Lane 3', type: 'Batting', devices: devices({ Tablets: 'warning' }) },
-      { id: 4, name: 'Lane 4', type: 'Batting', devices: devices() },
-      { id: 5, name: 'Lane 5', type: 'Batting', devices: devices({ 'Bowling Machine': 'offline' }) },
-      { id: 6, name: 'Lane 6', type: 'Hybrid', devices: devices() },
-      { id: 7, name: 'Lane 7', type: 'Hybrid', devices: devices({ Display: 'offline' }) },
+      { id: 1, name: 'Lane 1', type: 'Batting', devices: laneDevices(1, { camb: 'offline' }) },
+      { id: 2, name: 'Lane 2', type: 'Batting', devices: laneDevices(2) },
+      { id: 3, name: 'Lane 3', type: 'Batting', devices: laneDevices(3, { tablet: 'warning' }) },
+      { id: 4, name: 'Lane 4', type: 'Batting', devices: laneDevices(4) },
+      { id: 5, name: 'Lane 5', type: 'Batting', devices: laneDevices(5, { bowling: 'offline' }) },
+      { id: 6, name: 'Lane 6', type: 'Hybrid',  devices: laneDevices(6) },
+      { id: 7, name: 'Lane 7', type: 'Hybrid',  devices: laneDevices(7, { display: 'offline' }) },
     ],
   },
   {
-    id: 'bangalore',
+    id: 'BLR01',
     name: 'Bangalore',
     flag: 'in',
+    infrastructure,
     lanes: [
-      { id: 1, name: 'Lane 1', type: 'Batting', devices: devices() },
-      { id: 2, name: 'Lane 2', type: 'Batting', devices: devices({ Tablets: 'warning' }) },
-      { id: 3, name: 'Lane 3', type: 'Batting', devices: devices({ 'CV Right Cam': 'offline' }) },
-      { id: 4, name: 'Lane 4', type: 'Batting', devices: devices() },
-      { id: 5, name: 'Lane 5', type: 'Hybrid', devices: devices() },
-      { id: 6, name: 'Lane 6', type: 'Hybrid', devices: devices() },
-      { id: 7, name: 'Lane 7', type: 'Batting', devices: devices() },
+      { id: 1, name: 'Lane 1', type: 'Batting', devices: laneDevices(1) },
+      { id: 2, name: 'Lane 2', type: 'Batting', devices: laneDevices(2, { tablet: 'warning' }) },
+      { id: 3, name: 'Lane 3', type: 'Batting', devices: laneDevices(3, { camb: 'offline' }) },
+      { id: 4, name: 'Lane 4', type: 'Batting', devices: laneDevices(4) },
+      { id: 5, name: 'Lane 5', type: 'Hybrid',  devices: laneDevices(5) },
+      { id: 6, name: 'Lane 6', type: 'Hybrid',  devices: laneDevices(6) },
+      { id: 7, name: 'Lane 7', type: 'Batting', devices: laneDevices(7) },
     ],
   },
 ];

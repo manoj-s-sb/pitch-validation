@@ -3,7 +3,7 @@ import { LayoutDashboard, Target, Settings } from 'lucide-react';
 
 const navItems = [
   { id: 'noc', path: '/noc', icon: LayoutDashboard, label: 'Dashboard' },
-  { id: 'pitch', path: '/pitch-validation', icon: Target, label: 'Pitch Validation' },
+  { id: 'pitch', path: '/pitchValidation', icon: Target, label: 'Pitch Validation' },
 ];
 
 export default function Sidebar() {
