@@ -1,9 +1,12 @@
 .lane-details-page {
-  padding: 30px 40px;
   background-color: #fafafa;
   min-height: 100vh;
   color: #333;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.lane-details-wrapper {
+  padding: 30px 40px;
 }
 
 .ld-header-top {
@@ -47,7 +50,9 @@
   font-weight: 400;
   margin-left: 4px;
 }
-.ld-live-dot, .ld-status-dot, .ld-issues-dot {
+.ld-live-dot,
+.ld-status-dot,
+.ld-issues-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -119,7 +124,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 .ld-metric-issues {
   border-color: #ef4444;
@@ -143,8 +148,12 @@
   color: #888;
 }
 
-.ld-text-red { color: #ef4444 !important; }
-.ld-text-green { color: #22c55e !important; }
+.ld-text-red {
+  color: #ef4444 !important;
+}
+.ld-text-green {
+  color: #22c55e !important;
+}
 
 /* Sections */
 .ld-section {
@@ -164,7 +173,7 @@
   border: 1px solid #eaeaea;
   border-radius: 8px;
   padding: 0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 .ld-server-header {
   display: flex;
@@ -232,7 +241,7 @@
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 .ld-eq-header {
   display: flex;
@@ -291,14 +300,30 @@
   font-weight: 500;
 }
 @media (max-width: 1400px) {
-  .ld-equipment-grid { grid-template-columns: repeat(3, 1fr); }
+  .ld-equipment-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 @media (max-width: 1024px) {
-  .ld-metrics-grid { grid-template-columns: repeat(2, 1fr); }
-  .ld-equipment-grid { grid-template-columns: repeat(2, 1fr); }
+  .ld-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ld-equipment-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 @media (max-width: 768px) {
-  .ld-metrics-grid, .ld-equipment-grid { grid-template-columns: 1fr; }
-  .ld-header-top, .ld-title-row { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .ld-issues-btn { margin-top: 10px; }
+  .ld-metrics-grid,
+  .ld-equipment-grid {
+    grid-template-columns: 1fr;
+  }
+  .ld-header-top,
+  .ld-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .ld-issues-btn {
+    margin-top: 10px;
+  }
 }

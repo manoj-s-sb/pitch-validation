@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import NocPage from './pages/noc';
+import MultiCentreView from './pages/noc/views/MultiCentreView';
+import CentreDevicesView from './pages/noc/views/CentreDevicesView';
+import LaneDetailsView from './pages/noc/views/LaneDetailsView';
 import PitchValidationPage from './pages/pitch-validation';
-import LaneDetials from './pages/noc/components/LaneDetails';
 
 function AppLayout() {
   return (
@@ -10,9 +11,16 @@ function AppLayout() {
       <Sidebar />
       <div className="app-main">
         <Routes>
-          <Route path="/noc" element={<NocPage />} />
+          {/* Step 1 — All centres overview */}
+          <Route path="/noc" element={<MultiCentreView />} />
+
+          {/* Step 2 — Single centre device table */}
+          <Route path="/noc/:facilityCode" element={<CentreDevicesView />} />
+
+          {/* Step 3 — Lane details */}
+          <Route path="/noc/:facilityCode/:laneId" element={<LaneDetailsView />} />
+
           <Route path="/pitchValidation" element={<PitchValidationPage />} />
-          <Route path="/noc/:facilityCode/:laneId" element={<LaneDetials />} />
           <Route path="*" element={<Navigate to="/noc" replace />} />
         </Routes>
       </div>

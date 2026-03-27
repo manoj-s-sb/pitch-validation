@@ -467,8 +467,12 @@ function AllBallsDetail({ balls, colIdx }) {
           <thead>
             {/* Top header row with grouped columns */}
             <tr>
-              <th rowSpan={2} style={{ verticalAlign: 'bottom' }}>Ball</th>
-              <th colSpan={3} style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}>Speed (km/h)</th>
+              <th rowSpan={2} style={{ verticalAlign: 'bottom' }}>
+                Ball
+              </th>
+              <th colSpan={3} style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}>
+                Speed (km/h)
+              </th>
               {availableParams.map((p) => (
                 <th
                   key={p.label}
@@ -544,7 +548,9 @@ function AllBallsDetail({ balls, colIdx }) {
                     return rpm ? (
                       <React.Fragment key={param.label}>
                         <td style={{ textAlign: 'center' }}>{setVal}</td>
-                        <td style={{ textAlign: 'center', color: 'var(--text-dim)', fontStyle: 'italic' }}>{readVal}</td>
+                        <td style={{ textAlign: 'center', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                          {readVal}
+                        </td>
                       </React.Fragment>
                     ) : (
                       <React.Fragment key={param.label}>

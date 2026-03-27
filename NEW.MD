@@ -17,10 +17,10 @@ The portal follows a client-server architecture with two communication channels:
 
 The portal supports two user roles with distinct access levels:
 
-| Role | Access Scope | Description |
-|------|-------------|-------------|
-| **SuperAdmin** | All facilities | Can view and manage every facility registered in the system. Has access to cross-facility dashboards and aggregated reports. |
-| **Admin** | Assigned facility only | Can view and manage only the facility they are assigned to. All data, lanes, and resources are scoped to their facility. |
+| Role           | Access Scope           | Description                                                                                                                  |
+| -------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **SuperAdmin** | All facilities         | Can view and manage every facility registered in the system. Has access to cross-facility dashboards and aggregated reports. |
+| **Admin**      | Assigned facility only | Can view and manage only the facility they are assigned to. All data, lanes, and resources are scoped to their facility.     |
 
 Both roles authenticate through a shared login page. Upon successful login, the system determines the user's role and redirects them to the appropriate dashboard view.
 
@@ -46,17 +46,21 @@ flowchart TD
 Once a user selects or is assigned to a facility, the facility details page serves as the primary dashboard. It displays the following information:
 
 ### 4.1 Lane Status
+
 A summary view showing the online or offline status of every lane within the facility.
 
 ### 4.2 UniFi Status
+
 A quick-glance indicator of the UniFi network infrastructure at the facility. Includes a redirect link that navigates the operator directly to the UniFi dashboard for detailed network management.
 
 ### 4.3 Server Health
+
 Real-time server metrics including CPU usage and temperature readings. This section requires a dedicated backend API to fetch hardware telemetry.
 
 > **Dependency:** Backend API required for server health metrics.
 
 ### 4.4 Weekly Summary
+
 A summary of facility activity and session data for the current week, providing a quick snapshot of operational throughput.
 
 > **Dependency:** Backend API required for weekly session summary data.

@@ -159,7 +159,26 @@ export default function PitchValidationPage() {
       return;
     } else if (
       ['doc', 'code'].includes(type) &&
-      ['txt', 'log', 'json', 'xml', 'md', 'yaml', 'yml', 'py', 'js', 'html', 'css', 'sh', 'sql', 'java', 'cpp', 'c', 'go', 'rs'].includes(ext)
+      [
+        'txt',
+        'log',
+        'json',
+        'xml',
+        'md',
+        'yaml',
+        'yml',
+        'py',
+        'js',
+        'html',
+        'css',
+        'sh',
+        'sql',
+        'java',
+        'cpp',
+        'c',
+        'go',
+        'rs',
+      ].includes(ext)
     ) {
       setModalView('text');
       setModalContent('loading');

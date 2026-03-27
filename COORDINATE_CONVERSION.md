@@ -101,39 +101,39 @@ When the CV reports where the ball actually landed, we convert it to Lane App co
 
 #### X-Axis: `actualX = pitchXcm + 150`
 
-| What happens | Why |
-|---|---|
-| CV center is **0**, Lane App center is **150** | We shift the origin by adding 150 |
-| CV positive (+) = leg side | Lane App value becomes **> 150** (leg side) |
-| CV negative (-) = off side | Lane App value becomes **< 150** (off side) |
+| What happens                                   | Why                                         |
+| ---------------------------------------------- | ------------------------------------------- |
+| CV center is **0**, Lane App center is **150** | We shift the origin by adding 150           |
+| CV positive (+) = leg side                     | Lane App value becomes **> 150** (leg side) |
+| CV negative (-) = off side                     | Lane App value becomes **< 150** (off side) |
 
 **Examples:**
 
-| CV X (cm) | Calculation | Lane App X | Position |
-|---|---|---|---|
-| 0 | 0 + 150 = 150 | 150 | Dead center |
-| +50 | 50 + 150 = 200 | 200 | Leg side |
-| -50 | -50 + 150 = 100 | 100 | Off side |
-| +150 | 150 + 150 = 300 | 300 | Far leg edge |
-| -150 | -150 + 150 = 0 | 0 | Far off edge |
+| CV X (cm) | Calculation     | Lane App X | Position     |
+| --------- | --------------- | ---------- | ------------ |
+| 0         | 0 + 150 = 150   | 150        | Dead center  |
+| +50       | 50 + 150 = 200  | 200        | Leg side     |
+| -50       | -50 + 150 = 100 | 100        | Off side     |
+| +150      | 150 + 150 = 300 | 300        | Far leg edge |
+| -150      | -150 + 150 = 0  | 0          | Far off edge |
 
 #### Y-Axis: `actualY = pitchZcm / 1000 * 80`
 
-| What happens | Why |
-|---|---|
-| CV range is **0-1000 cm**, canvas pitchable area is **0-80%** | We scale 1000 cm down to 80 canvas units |
-| The pitchable zone on the canvas covers **0% to 80%** | The remaining 20% (80-100%) is the "Shorts" zone beyond normal bowling range |
+| What happens                                                  | Why                                                                          |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| CV range is **0-1000 cm**, canvas pitchable area is **0-80%** | We scale 1000 cm down to 80 canvas units                                     |
+| The pitchable zone on the canvas covers **0% to 80%**         | The remaining 20% (80-100%) is the "Shorts" zone beyond normal bowling range |
 
 **Examples:**
 
-| CV Z (cm) | Calculation | Lane App Y | Length Zone |
-|---|---|---|---|
-| 0 | 0 / 1000 * 80 = 0 | 0 | Full Toss |
-| 100 | 100 / 1000 * 80 = 8 | 8 | Yorkers |
-| 250 | 250 / 1000 * 80 = 20 | 20 | Half Volley |
-| 500 | 500 / 1000 * 80 = 40 | 40 | Full |
-| 750 | 750 / 1000 * 80 = 60 | 60 | Length |
-| 1000 | 1000 / 1000 * 80 = 80 | 80 | Back of Length |
+| CV Z (cm) | Calculation            | Lane App Y | Length Zone    |
+| --------- | ---------------------- | ---------- | -------------- |
+| 0         | 0 / 1000 \* 80 = 0     | 0          | Full Toss      |
+| 100       | 100 / 1000 \* 80 = 8   | 8          | Yorkers        |
+| 250       | 250 / 1000 \* 80 = 20  | 20         | Half Volley    |
+| 500       | 500 / 1000 \* 80 = 40  | 40         | Full           |
+| 750       | 750 / 1000 \* 80 = 60  | 60         | Length         |
+| 1000      | 1000 / 1000 \* 80 = 80 | 80         | Back of Length |
 
 ---
 
@@ -155,20 +155,20 @@ Scales the 0-100 canvas range back to the 0-1000 cm real-world range.
 
 To render dots on the visual pitch canvas in the browser:
 
-| Axis | Formula | Result |
-|---|---|---|
-| X | `left% = canvasX / 3` | 0-300 maps to 0-100% of canvas width |
-| Y | `top% = canvasY` | 0-100 maps directly to 0-100% of canvas height |
+| Axis | Formula               | Result                                         |
+| ---- | --------------------- | ---------------------------------------------- |
+| X    | `left% = canvasX / 3` | 0-300 maps to 0-100% of canvas width           |
+| Y    | `top% = canvasY`      | 0-100 maps directly to 0-100% of canvas height |
 
 ---
 
 ## Conversion Summary
 
-| Direction | X Formula | Y Formula |
-|---|---|---|
-| CV (cm) to Lane App | `cm + 150` | `cm / 1000 * 80` |
-| Lane App to CV (cm) | `laneApp - 150` | `laneApp / 100 * 1000` |
-| Lane App to Screen % | `laneApp / 3` | `laneApp` (direct %) |
+| Direction            | X Formula       | Y Formula              |
+| -------------------- | --------------- | ---------------------- |
+| CV (cm) to Lane App  | `cm + 150`      | `cm / 1000 * 80`       |
+| Lane App to CV (cm)  | `laneApp - 150` | `laneApp / 100 * 1000` |
+| Lane App to Screen % | `laneApp / 3`   | `laneApp` (direct %)   |
 
 ---
 
@@ -191,32 +191,36 @@ File: `src/utils/pitch.js`
 
 ```js
 // CV (cm) to Lane App (canvas units)
-const actualX = pitchXcm + 150;              // line 70
-const actualY = (pitchZcm / 1000) * 80;      // line 71
+const actualX = pitchXcm + 150; // line 70
+const actualY = (pitchZcm / 1000) * 80; // line 71
 
 // Lane App (canvas units) to CV (cm)
-function configXtoCm(x) { return x - 150; }           // line 79
-function configYtoCm(y) { return (y / 100) * 1000; }  // line 82
+function configXtoCm(x) {
+  return x - 150;
+} // line 79
+function configYtoCm(y) {
+  return (y / 100) * 1000;
+} // line 82
 ```
 
 ---
 
 ## Length Zones on the Pitch Canvas
 
-| Zone | Canvas Y Range | Real-World Distance | Color |
-|---|---|---|---|
-| Full Toss | 0 - 8 | 0 - 1 m | Red |
-| Yorkers | 8 - 16 | 1 - 2 m | Yellow |
-| Half Volley | 16 - 32 | 2 - 4 m | Green |
-| Full | 32 - 48 | 4 - 6 m | Red |
-| Length | 48 - 64 | 6 - 8 m | Purple |
-| Back of Length | 64 - 80 | 8 - 10 m | Blue |
-| Shorts | 80 - 100 | Beyond 10 m | Dark |
+| Zone           | Canvas Y Range | Real-World Distance | Color  |
+| -------------- | -------------- | ------------------- | ------ |
+| Full Toss      | 0 - 8          | 0 - 1 m             | Red    |
+| Yorkers        | 8 - 16         | 1 - 2 m             | Yellow |
+| Half Volley    | 16 - 32        | 2 - 4 m             | Green  |
+| Full           | 32 - 48        | 4 - 6 m             | Red    |
+| Length         | 48 - 64        | 6 - 8 m             | Purple |
+| Back of Length | 64 - 80        | 8 - 10 m            | Blue   |
+| Shorts         | 80 - 100       | Beyond 10 m         | Dark   |
 
 ## Line Zones on the Pitch Canvas
 
-| Zone | Canvas X Range | Screen % |
-|---|---|---|
-| Outside Off | 0 - 100 | 0% - 33.33% |
-| Inline | 100 - 200 | 33.33% - 66.66% |
-| Outside Leg | 200 - 300 | 66.66% - 100% |
+| Zone        | Canvas X Range | Screen %        |
+| ----------- | -------------- | --------------- |
+| Outside Off | 0 - 100        | 0% - 33.33%     |
+| Inline      | 100 - 200      | 33.33% - 66.66% |
+| Outside Leg | 200 - 300      | 66.66% - 100%   |
