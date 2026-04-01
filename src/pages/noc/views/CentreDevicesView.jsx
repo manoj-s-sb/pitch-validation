@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Search, Network, Server, Wifi, Monitor, Tv, Zap, Tablet, Camera } from 'lucide-react';
 import { facilities } from '../data';
@@ -109,6 +109,12 @@ export default function CentreDevicesView() {
   const facility = facilities.find((f) => f.id === facilityCode);
   const stats = facility ? calcStats(facility) : null;
 
+  useEffect(() => {
+    document.title = facility
+      ? `Century Cricket — ${facility.name} Centre Overview`
+      : 'Century Cricket';
+  }, [facility]);
+
   function matchesFilter(device) {
     if (filter === 'online' && device.status !== 'online') return false;
     if (filter === 'offline' && device.status !== 'offline') return false;
@@ -130,41 +136,41 @@ export default function CentreDevicesView() {
   return (
     <div className="noc-page">
       <NOCHeader title={facility.name} subtitle={facility.location} backPath="/noc" showTime={false} />
+      <div className="noc-stats-bar">
+        <div className="noc-stat-cell">
+          <div className="noc-stat-label">Total Devices</div>
+          <div className="noc-stat-value">{stats.total}</div>
+          <div className="noc-stat-sub">All lanes + infra</div>
+        </div>
+        <div className="noc-stat-cell">
+          <div className="noc-stat-label">Online</div>
+          <div className="noc-stat-value noc-val-green">{stats.online}</div>
+          <div className="noc-stat-sub">Responding</div>
+        </div>
+        <div className="noc-stat-cell">
+          <div className="noc-stat-label">Offline</div>
+          <div className="noc-stat-value noc-val-red">{stats.offline}</div>
+          <div className="noc-stat-sub">No response</div>
+        </div>
+        <div className="noc-stat-cell">
+          <div className="noc-stat-label">Warnings</div>
+          <div className="noc-stat-value noc-val-orange">{stats.warnings}</div>
+          <div className="noc-stat-sub">Issues</div>
+        </div>
+        <div className="noc-stat-cell">
+          <div className="noc-stat-label">Lanes</div>
+          <div className="noc-stat-value">
+            <span className="noc-val-blue">{stats.onlineLanes}</span>
+            <span className="noc-val-total">/{stats.totalLanes}</span>
+          </div>
+          <div className="noc-stat-sub">
+            {stats.batting} batting · {stats.hybrid} hybrid
+          </div>
+        </div>
+      </div>
 
       <div className="noc-facility-content">
         {/* Stats bar */}
-        <div className="noc-stats-bar">
-          <div className="noc-stat-cell">
-            <div className="noc-stat-label">Total Devices</div>
-            <div className="noc-stat-value">{stats.total}</div>
-            <div className="noc-stat-sub">All lanes + infra</div>
-          </div>
-          <div className="noc-stat-cell">
-            <div className="noc-stat-label">Online</div>
-            <div className="noc-stat-value noc-val-green">{stats.online}</div>
-            <div className="noc-stat-sub">Responding</div>
-          </div>
-          <div className="noc-stat-cell">
-            <div className="noc-stat-label">Offline</div>
-            <div className="noc-stat-value noc-val-red">{stats.offline}</div>
-            <div className="noc-stat-sub">No response</div>
-          </div>
-          <div className="noc-stat-cell">
-            <div className="noc-stat-label">Warnings</div>
-            <div className="noc-stat-value noc-val-orange">{stats.warnings}</div>
-            <div className="noc-stat-sub">Issues</div>
-          </div>
-          <div className="noc-stat-cell">
-            <div className="noc-stat-label">Lanes</div>
-            <div className="noc-stat-value">
-              <span className="noc-val-blue">{stats.onlineLanes}</span>
-              <span className="noc-val-total">/{stats.totalLanes}</span>
-            </div>
-            <div className="noc-stat-sub">
-              {stats.batting} batting · {stats.hybrid} hybrid
-            </div>
-          </div>
-        </div>
 
         {/* Devices table */}
         <div className="noc-devices-section">

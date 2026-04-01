@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Server, AlertTriangle, Monitor, Tablet, Camera, Zap } from 'lucide-react';
 import './LaneDetailsView.css';
@@ -9,6 +10,12 @@ const LaneDetailsView = () => {
 
   const facility = facilities.find((f) => f.id === facilityCode);
   const lane = facility?.lanes.find((l) => l.id.toString() === laneId);
+
+  useEffect(() => {
+    document.title = facility && lane
+      ? `Century Cricket — ${facility.name} / ${lane.name}`
+      : 'Century Cricket';
+  }, [facility, lane]);
 
   return (
     <div className="lane-details-page">

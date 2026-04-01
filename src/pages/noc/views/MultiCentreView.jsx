@@ -1,4 +1,4 @@
-import { Activity } from 'lucide-react';
+import { useEffect } from 'react';
 import { facilities } from '../data';
 import CentreCard from '../components/CentreCard';
 import NOCHeader from '../../../components/NOCHeader';
@@ -19,9 +19,27 @@ function getGlobalStats(facilityList) {
 export default function MultiCentreView() {
   const stats = getGlobalStats(facilities);
 
+  useEffect(() => { document.title = 'Century Cricket — NOC Overview'; }, []);
+
   return (
     <div className="noc-page">
-      <NOCHeader title="Century Cricket — NOC Operations" icon={Activity} showTime={true} />
+      <NOCHeader
+        title="Century Cricket"
+        subtitle="NOC · Multi-Centre Overview"
+        subtitleUppercase={true}
+        logo={
+          <div style={{
+            width: 48, height: 48, borderRadius: 12,
+            background: '#2563eb', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <span style={{ color: '#fff', fontWeight: 900, fontSize: 16, fontStyle: 'italic', letterSpacing: '-0.5px' }}>cc</span>
+          </div>
+        }
+        showTime={true}
+        showSync={true}
+      />
 
       {/* Global stats bar */}
       <div className="mc-stats-bar">

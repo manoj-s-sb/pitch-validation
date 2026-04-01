@@ -100,22 +100,22 @@ export default function CentreCard({ facility }) {
               className="cc-lane-row"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/noc/${facility.id}/${lane.id}`);
+                navigate(`/noc/${facility.id}`);
               }}
             >
               <span className={`cc-lane-type cc-lane-${lane.type.toLowerCase()}`}>{lane.type}</span>
               <span className="cc-lane-name">{lane.name}</span>
               <div className="cc-lane-counts">
                 {up > 0 && <span className="cc-up">• {up} up</span>}
-                {down > 0 && <span className="cc-down">· {down} down</span>}
-                {warn > 0 && <span className="cc-warn">· {warn} warn</span>}
+                {down > 0 && <span className="cc-down">• {down} down</span>}
+                {warn > 0 && <span className="cc-warn">• {warn} warn</span>}
               </div>
               <div className="cc-lane-icons">
                 {lane.devices.map((d, i) => {
                   const Icon = iconMap[d.icon] || Monitor;
                   return (
                     <div key={i} className="cc-dev-icon" title={d.name}>
-                      <Icon size={11} strokeWidth={1.8} />
+                      <Icon size={13} strokeWidth={1.8} />
                       <span className="cc-dev-dot" style={{ background: statusDot[d.status] }} />
                     </div>
                   );
@@ -124,6 +124,14 @@ export default function CentreCard({ facility }) {
             </div>
           );
         })}
+      </div>
+
+      {/* Footer */}
+      <div className="cc-footer">
+        <button className="cc-topology-btn" onClick={(e) => { e.stopPropagation(); }}>
+          View Topology →
+        </button>
+        <span className="cc-updated">Updated just now</span>
       </div>
     </div>
   );
