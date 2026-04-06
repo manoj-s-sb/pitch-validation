@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'lucide-react';
 import { parsePitchBalls, getLineLabel, getLengthLabel, LENGTH_BANDS, PITCH_PARAMS } from '../utils/pitch';
 
+
 function showCopyToast(msg) {
   const existing = document.querySelector('.copy-toast-global');
   if (existing) existing.remove();
@@ -400,6 +401,35 @@ function BallDetail({ ball, colIdx }) {
         </div>
       </div>
 
+      {/* Inswing & Deviation — only show when value is non-zero */}
+      {(() => {
+        const inswingCol = colIdx['INSWING'] ?? colIdx['Inswing'] ?? colIdx['inswing'];
+        const deviationCol = colIdx['DEVIATION'] ?? colIdx['Deviation'] ?? colIdx['deviation'];
+        const inswingVal = inswingCol !== undefined ? ball.row[inswingCol] : undefined;
+        const deviationVal = deviationCol !== undefined ? ball.row[deviationCol] : undefined;
+        const showInswing = inswingVal !== undefined && parseFloat(inswingVal) !== 0 && inswingVal !== '';
+        const showDeviation = deviationVal !== undefined && parseFloat(deviationVal) !== 0 && deviationVal !== '';
+        if (!showInswing && !showDeviation) return null;
+        return (
+          <div className="pitch-detail-section">
+            <div className="pitch-info-grid">
+              {showInswing && (
+                <div className="pitch-info-card">
+                  <div className="label">Inswing</div>
+                  <div className="value">{inswingVal}</div>
+                </div>
+              )}
+              {showDeviation && (
+                <div className="pitch-info-card">
+                  <div className="label">Deviation</div>
+                  <div className="value">{deviationVal}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Video */}
       <div className="pitch-detail-section">
         <h4>Video</h4>
@@ -456,7 +486,13 @@ function AllBallsDetail({ balls, colIdx }) {
     return colIdx[p.setCol] !== undefined || colIdx[p.readCol] !== undefined;
   });
 
+  const inswingCol = colIdx['INSWING'] ?? colIdx['Inswing'] ?? colIdx['inswing'];
+  const deviationCol = colIdx['DEVIATION'] ?? colIdx['Deviation'] ?? colIdx['deviation'];
+  const hasInswing = inswingCol !== undefined && balls.some((b) => { const v = b.row[inswingCol]; return v !== undefined && v !== '' && parseFloat(v) !== 0; });
+  const hasDeviation = deviationCol !== undefined && balls.some((b) => { const v = b.row[deviationCol]; return v !== undefined && v !== '' && parseFloat(v) !== 0; });
+
   return (
+    <>
     <div className="pitch-detail-section">
       <h4>All Balls Overview</h4>
       <div style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 12 }}>
@@ -479,6 +515,8 @@ function AllBallsDetail({ balls, colIdx }) {
                   {isRPM(p.label) && <span style={{ fontSize: 9, color: '#ef4444', marginLeft: 2 }}>*</span>}
                 </th>
               ))}
+              {hasInswing && <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'bottom' }}>Inswing</th>}
+              {hasDeviation && <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'bottom' }}>Deviation</th>}
             </tr>
             {/* Sub header row */}
             <tr>
@@ -556,6 +594,9 @@ function AllBallsDetail({ balls, colIdx }) {
                       </React.Fragment>
                     );
                   })}
+                  {/* Inswing & Deviation — show only when non-zero */}
+                  {hasInswing && (() => { const v = ball.row[inswingCol]; const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0; return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>; })()}
+                  {hasDeviation && (() => { const v = ball.row[deviationCol]; const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0; return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>; })()}
                 </tr>
               );
             })}
@@ -566,5 +607,7 @@ function AllBallsDetail({ balls, colIdx }) {
         * RPM read values may not be accurate — diff not computed
       </div>
     </div>
+
+    </>
   );
 }
