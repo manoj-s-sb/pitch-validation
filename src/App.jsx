@@ -235,16 +235,30 @@ export default function App() {
 
   // Switch views for CSV
   const showPitchMapping = useCallback(() => {
-    if (!currentCsvData) return;
-    setModalView('csv-pitchmap');
-    setModalContent(currentCsvData);
-  }, [currentCsvData]);
+    if (modalView === 'bulk-csv-table') {
+      setModalView('bulk-view');
+    } else if (currentCsvData) {
+      setModalView('csv-pitchmap');
+      setModalContent(currentCsvData);
+    }
+  }, [modalView, currentCsvData]);
 
   const showCsvTable = useCallback(() => {
-    if (!currentCsvData) return;
-    setModalView('csv-table');
-    setModalContent(currentCsvData);
-  }, [currentCsvData]);
+    if (modalView === 'bulk-view') {
+      setModalView('bulk-csv-table');
+    } else if (currentCsvData) {
+      setModalView('csv-table');
+      setModalContent(currentCsvData);
+    }
+  }, [modalView, currentCsvData]);
+
+  const showBulkCsvTable = useCallback(() => {
+    const firstChecked = bulkCsvFiles.find((f) => f.checked);
+    if (!firstChecked) return;
+    setActiveBulkIndex(bulkCsvFiles.indexOf(firstChecked));
+    setCurrentCsvData(firstChecked.data);
+    setModalView('bulk-csv-table');
+  }, [bulkCsvFiles]);
 
   // Session report
   const handleGenerateReport = useCallback(() => {
@@ -324,18 +338,18 @@ export default function App() {
   }, [bulkCsvFiles]);
 
   // Compute modal button visibility
-  const showPitchMapBtn = modalView === 'csv-table' && currentCsvData && currentCsvData !== 'loading';
-  const showCsvTableBtn = modalView === 'csv-pitchmap';
-  const showReportBtn = modalView === 'csv-pitchmap' || modalView === 'bulk-view';
-  const showDownloadBtn = !bulkMode && modalView !== 'bulk-upload' && modalView !== 'bulk-view' && currentFileUrl;
+  const showPitchMapBtn = (modalView === 'csv-table' && currentCsvData && currentCsvData !== 'loading') || modalView === 'bulk-csv-table';
+  const showCsvTableBtn = modalView === 'csv-pitchmap' || modalView === 'bulk-view';
+  const showReportBtn = modalView === 'csv-pitchmap' || modalView === 'bulk-view' || modalView === 'bulk-csv-table';
+  const showDownloadBtn = !bulkMode && modalView !== 'bulk-upload' && modalView !== 'bulk-view' && modalView !== 'bulk-csv-table' && currentFileUrl;
 
   const checkedCount = bulkCsvFiles.filter((f) => f.checked).length;
-  const reportBtnLabel = modalView === 'bulk-view' ? `Generate Report (${checkedCount})` : 'Generate Report';
-  const reportBtnDisabled = modalView === 'bulk-view' && checkedCount === 0;
+  const reportBtnLabel = (modalView === 'bulk-view' || modalView === 'bulk-csv-table') ? `Generate Report (${checkedCount})` : 'Generate Report';
+  const reportBtnDisabled = (modalView === 'bulk-view' || modalView === 'bulk-csv-table') && checkedCount === 0;
 
   // Build bulk tabs title content
   const bulkTitleContent =
-    modalView === 'bulk-view' ? (
+    (modalView === 'bulk-view' || modalView === 'bulk-csv-table') ? (
       <span
         style={{ display: 'flex', gap: 6, alignItems: 'center', overflowX: 'auto', maxWidth: '100%', paddingBottom: 4 }}
       >
@@ -478,6 +492,7 @@ export default function App() {
             onAddFiles={addBulkFiles}
             onStartView={startBulkView}
             onGenerateReport={handleBulkReport}
+            onTableView={showBulkCsvTable}
           />
         );
 
@@ -487,6 +502,11 @@ export default function App() {
             {currentCsvData && <PitchMapping csvText={currentCsvData} />}
           </div>
         );
+
+      case 'bulk-csv-table': {
+        const activeFile = bulkCsvFiles[activeBulkIndex];
+        return activeFile ? <CSVTable csvText={activeFile.data} /> : null;
+      }
 
       default:
         return null;
