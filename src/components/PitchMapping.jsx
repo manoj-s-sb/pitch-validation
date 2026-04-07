@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'lucide-react';
 import { parsePitchBalls, getLineLabel, getLengthLabel, LENGTH_BANDS, PITCH_PARAMS } from '../utils/pitch';
 
-
 function showCopyToast(msg) {
   const existing = document.querySelector('.copy-toast-global');
   if (existing) existing.remove();
@@ -488,126 +487,159 @@ function AllBallsDetail({ balls, colIdx }) {
 
   const inswingCol = colIdx['INSWING'] ?? colIdx['Inswing'] ?? colIdx['inswing'];
   const deviationCol = colIdx['DEVIATION'] ?? colIdx['Deviation'] ?? colIdx['deviation'];
-  const hasInswing = inswingCol !== undefined && balls.some((b) => { const v = b.row[inswingCol]; return v !== undefined && v !== '' && parseFloat(v) !== 0; });
-  const hasDeviation = deviationCol !== undefined && balls.some((b) => { const v = b.row[deviationCol]; return v !== undefined && v !== '' && parseFloat(v) !== 0; });
+  const hasInswing =
+    inswingCol !== undefined &&
+    balls.some((b) => {
+      const v = b.row[inswingCol];
+      return v !== undefined && v !== '' && parseFloat(v) !== 0;
+    });
+  const hasDeviation =
+    deviationCol !== undefined &&
+    balls.some((b) => {
+      const v = b.row[deviationCol];
+      return v !== undefined && v !== '' && parseFloat(v) !== 0;
+    });
 
   return (
     <>
-    <div className="pitch-detail-section">
-      <h4>All Balls Overview</h4>
-      <div style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 12 }}>
-        Showing all {balls.length} balls — config (red) vs actual (blue)
-      </div>
-      <div className="param-table-wrap">
-        <table className="param-table">
-          <thead>
-            {/* Top header row with grouped columns */}
-            <tr>
-              <th rowSpan={2} style={{ verticalAlign: 'bottom' }}>Ball</th>
-              <th colSpan={3} style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}>Speed (km/h)</th>
-              {availableParams.map((p) => (
-                <th
-                  key={p.label}
-                  colSpan={isRPM(p.label) ? 2 : 3}
-                  style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}
-                >
-                  {p.label}
-                  {isRPM(p.label) && <span style={{ fontSize: 9, color: '#ef4444', marginLeft: 2 }}>*</span>}
+      <div className="pitch-detail-section">
+        <h4>All Balls Overview</h4>
+        <div style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 12 }}>
+          Showing all {balls.length} balls — config (red) vs actual (blue)
+        </div>
+        <div className="param-table-wrap">
+          <table className="param-table">
+            <thead>
+              {/* Top header row with grouped columns */}
+              <tr>
+                <th rowSpan={2} style={{ verticalAlign: 'bottom' }}>
+                  Ball
                 </th>
-              ))}
-              {hasInswing && <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'bottom' }}>Inswing</th>}
-              {hasDeviation && <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'bottom' }}>Deviation</th>}
-            </tr>
-            {/* Sub header row */}
-            <tr>
-              <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
-              <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Actual</th>
-              <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Diff</th>
-              {availableParams.map((p) =>
-                isRPM(p.label) ? (
-                  <React.Fragment key={p.label + '-sub'}>
-                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
-                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Read</th>
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment key={p.label + '-sub'}>
-                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
-                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Read</th>
-                    <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Diff</th>
-                  </React.Fragment>
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {balls.map((ball) => {
-              // Speed
-              const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
-              const relVal = !isNaN(releaseSpd) ? Math.round(releaseSpd) : NaN;
-              const cfgSpd = parseFloat(ball.speed);
-              const cfgVal = !isNaN(cfgSpd) ? Math.round(cfgSpd) : NaN;
-              const hasSpdDiff = !isNaN(relVal) && !isNaN(cfgVal);
-              const spdDiff = hasSpdDiff ? relVal - cfgVal : 0;
-              const absSpdDiff = Math.abs(spdDiff);
-              const spdClass = hasSpdDiff ? (absSpdDiff === 0 ? 'match' : absSpdDiff <= 5 ? 'off' : 'bad') : '';
-              const spdLabel = hasSpdDiff ? (absSpdDiff === 0 ? '0' : (spdDiff > 0 ? '+' : '') + spdDiff) : '-';
+                <th colSpan={3} style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}>
+                  Speed (km/h)
+                </th>
+                {availableParams.map((p) => (
+                  <th
+                    key={p.label}
+                    colSpan={isRPM(p.label) ? 2 : 3}
+                    style={{ textAlign: 'center', borderBottom: '1px solid var(--border-solid)' }}
+                  >
+                    {p.label}
+                    {isRPM(p.label) && <span style={{ fontSize: 9, color: '#ef4444', marginLeft: 2 }}>*</span>}
+                  </th>
+                ))}
+                {hasInswing && (
+                  <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'bottom' }}>
+                    Inswing
+                  </th>
+                )}
+                {hasDeviation && (
+                  <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'bottom' }}>
+                    Deviation
+                  </th>
+                )}
+              </tr>
+              {/* Sub header row */}
+              <tr>
+                <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
+                <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Actual</th>
+                <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Diff</th>
+                {availableParams.map((p) =>
+                  isRPM(p.label) ? (
+                    <React.Fragment key={p.label + '-sub'}>
+                      <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
+                      <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Read</th>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment key={p.label + '-sub'}>
+                      <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Set</th>
+                      <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Read</th>
+                      <th style={{ textAlign: 'center', fontSize: 10, fontWeight: 500, padding: '6px 8px' }}>Diff</th>
+                    </React.Fragment>
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {balls.map((ball) => {
+                // Speed
+                const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
+                const relVal = !isNaN(releaseSpd) ? Math.round(releaseSpd) : NaN;
+                const cfgSpd = parseFloat(ball.speed);
+                const cfgVal = !isNaN(cfgSpd) ? Math.round(cfgSpd) : NaN;
+                const hasSpdDiff = !isNaN(relVal) && !isNaN(cfgVal);
+                const spdDiff = hasSpdDiff ? relVal - cfgVal : 0;
+                const absSpdDiff = Math.abs(spdDiff);
+                const spdClass = hasSpdDiff ? (absSpdDiff === 0 ? 'match' : absSpdDiff <= 5 ? 'off' : 'bad') : '';
+                const spdLabel = hasSpdDiff ? (absSpdDiff === 0 ? '0' : (spdDiff > 0 ? '+' : '') + spdDiff) : '-';
 
-              return (
-                <tr key={ball.index}>
-                  <td className="param-name">{String(ball.ballId)}</td>
-                  {/* Speed cells */}
-                  <td style={{ textAlign: 'center' }}>{!isNaN(cfgVal) ? cfgVal : '-'}</td>
-                  <td style={{ textAlign: 'center' }}>{!isNaN(relVal) ? relVal : '-'}</td>
-                  <td style={{ textAlign: 'center' }}>
-                    {hasSpdDiff ? <span className={`pitch-diff badge ${spdClass}`}>{spdLabel}</span> : '-'}
-                  </td>
-                  {/* Param cells */}
-                  {availableParams.map((param) => {
-                    const setIdx = colIdx[param.setCol];
-                    const readIdx = colIdx[param.readCol];
-                    const setVal = setIdx !== undefined ? ball.row[setIdx] || '-' : '-';
-                    const readVal = readIdx !== undefined ? ball.row[readIdx] || '-' : '-';
-                    const rpm = isRPM(param.label);
-                    const setNum = parseFloat(setVal);
-                    const readNum = parseFloat(readVal);
-                    const hasDiff = !rpm && !isNaN(setNum) && !isNaN(readNum);
-                    const diff = hasDiff ? Math.abs(setNum - readNum) : 0;
-                    const diffClass = hasDiff ? (diff === 0 ? 'match' : diff <= 50 ? 'off' : 'bad') : '';
-                    const diffLabel = hasDiff
-                      ? diff === 0
-                        ? '0'
-                        : (setNum > readNum ? '-' : '+') + diff.toFixed(0)
-                      : '-';
+                return (
+                  <tr key={ball.index}>
+                    <td className="param-name">{String(ball.ballId)}</td>
+                    {/* Speed cells */}
+                    <td style={{ textAlign: 'center' }}>{!isNaN(cfgVal) ? cfgVal : '-'}</td>
+                    <td style={{ textAlign: 'center' }}>{!isNaN(relVal) ? relVal : '-'}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      {hasSpdDiff ? <span className={`pitch-diff badge ${spdClass}`}>{spdLabel}</span> : '-'}
+                    </td>
+                    {/* Param cells */}
+                    {availableParams.map((param) => {
+                      const setIdx = colIdx[param.setCol];
+                      const readIdx = colIdx[param.readCol];
+                      const setVal = setIdx !== undefined ? ball.row[setIdx] || '-' : '-';
+                      const readVal = readIdx !== undefined ? ball.row[readIdx] || '-' : '-';
+                      const rpm = isRPM(param.label);
+                      const setNum = parseFloat(setVal);
+                      const readNum = parseFloat(readVal);
+                      const hasDiff = !rpm && !isNaN(setNum) && !isNaN(readNum);
+                      const diff = hasDiff ? Math.abs(setNum - readNum) : 0;
+                      const diffClass = hasDiff ? (diff === 0 ? 'match' : diff <= 50 ? 'off' : 'bad') : '';
+                      const diffLabel = hasDiff
+                        ? diff === 0
+                          ? '0'
+                          : (setNum > readNum ? '-' : '+') + diff.toFixed(0)
+                        : '-';
 
-                    return rpm ? (
-                      <React.Fragment key={param.label}>
-                        <td style={{ textAlign: 'center' }}>{setVal}</td>
-                        <td style={{ textAlign: 'center', color: 'var(--text-dim)', fontStyle: 'italic' }}>{readVal}</td>
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment key={param.label}>
-                        <td style={{ textAlign: 'center' }}>{setVal}</td>
-                        <td style={{ textAlign: 'center' }}>{readVal}</td>
-                        <td style={{ textAlign: 'center' }}>
-                          {hasDiff ? <span className={`pitch-diff badge ${diffClass}`}>{diffLabel}</span> : '-'}
-                        </td>
-                      </React.Fragment>
-                    );
-                  })}
-                  {/* Inswing & Deviation — show only when non-zero */}
-                  {hasInswing && (() => { const v = ball.row[inswingCol]; const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0; return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>; })()}
-                  {hasDeviation && (() => { const v = ball.row[deviationCol]; const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0; return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>; })()}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                      return rpm ? (
+                        <React.Fragment key={param.label}>
+                          <td style={{ textAlign: 'center' }}>{setVal}</td>
+                          <td style={{ textAlign: 'center', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                            {readVal}
+                          </td>
+                        </React.Fragment>
+                      ) : (
+                        <React.Fragment key={param.label}>
+                          <td style={{ textAlign: 'center' }}>{setVal}</td>
+                          <td style={{ textAlign: 'center' }}>{readVal}</td>
+                          <td style={{ textAlign: 'center' }}>
+                            {hasDiff ? <span className={`pitch-diff badge ${diffClass}`}>{diffLabel}</span> : '-'}
+                          </td>
+                        </React.Fragment>
+                      );
+                    })}
+                    {/* Inswing & Deviation — show only when non-zero */}
+                    {hasInswing &&
+                      (() => {
+                        const v = ball.row[inswingCol];
+                        const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0;
+                        return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>;
+                      })()}
+                    {hasDeviation &&
+                      (() => {
+                        const v = ball.row[deviationCol];
+                        const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0;
+                        return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>;
+                      })()}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 8, fontStyle: 'italic' }}>
+          * RPM read values may not be accurate — diff not computed
+        </div>
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 8, fontStyle: 'italic' }}>
-        * RPM read values may not be accurate — diff not computed
-      </div>
-    </div>
-
     </>
   );
 }

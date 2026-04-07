@@ -67,7 +67,8 @@ export function parsePitchBalls(csvText) {
 
     const pitchXcm = pitchXCol !== undefined ? parseFloat(row[pitchXCol]) : NaN;
     const pitchZcm = pitchZCol !== undefined ? parseFloat(row[pitchZCol]) : NaN;
-    const actualX = !isNaN(pitchXcm) ? pitchXcm + 150 : NaN;
+    const PITCH_WIDTH_CM = 177.8;
+    const actualX = !isNaN(pitchXcm) ? ((pitchXcm + PITCH_WIDTH_CM / 2) / PITCH_WIDTH_CM) * 300 : NaN;
     const actualY = !isNaN(pitchZcm) ? (pitchZcm / 1000) * 80 : NaN;
 
     return { ballId, x, y, actualX, actualY, pitchXcm, pitchZcm, speed: spd, releaseSpeed, videoUrl, row, index: ri };
