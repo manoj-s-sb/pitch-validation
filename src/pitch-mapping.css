@@ -145,7 +145,7 @@
   z-index: 1;
 }
 .pitch-ball-dot.config-ball.selected {
-  width: 48px;
+  width: 55px;
   height: 58px;
   box-shadow:
     0 0 0 3px rgba(239, 68, 68, 0.3),
