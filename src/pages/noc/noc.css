@@ -189,10 +189,18 @@
   font-size: 12px;
   color: #aaa;
 }
-.noc-val-green  { color: #22c55e; }
-.noc-val-red    { color: #ef4444; }
-.noc-val-orange { color: #f59e0b; }
-.noc-val-blue   { color: #3b82f6; }
+.noc-val-green {
+  color: #22c55e;
+}
+.noc-val-red {
+  color: #ef4444;
+}
+.noc-val-orange {
+  color: #f59e0b;
+}
+.noc-val-blue {
+  color: #3b82f6;
+}
 .noc-val-total {
   font-size: 22px;
   font-weight: 400;

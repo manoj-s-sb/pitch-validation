@@ -98,9 +98,15 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.cc-val-green  { color: #22c55e; }
-.cc-val-red    { color: #ef4444; }
-.cc-val-orange { color: #f59e0b; }
+.cc-val-green {
+  color: #22c55e;
+}
+.cc-val-red {
+  color: #ef4444;
+}
+.cc-val-orange {
+  color: #f59e0b;
+}
 
 /* ── Alert strip ── */
 .cc-alert {
@@ -133,7 +139,9 @@
   background: #f8f9fb;
   border: 1px solid #eef0f4;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
 }
 .cc-lane-row:hover {
   background: #eef1f8;

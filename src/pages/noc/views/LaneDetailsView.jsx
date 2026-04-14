@@ -12,9 +12,7 @@ const LaneDetailsView = () => {
   const lane = facility?.lanes.find((l) => l.id.toString() === laneId);
 
   useEffect(() => {
-    document.title = facility && lane
-      ? `Century Cricket — ${facility.name} / ${lane.name}`
-      : 'Century Cricket';
+    document.title = facility && lane ? `Century Cricket — ${facility.name} / ${lane.name}` : 'Century Cricket';
   }, [facility, lane]);
 
   return (

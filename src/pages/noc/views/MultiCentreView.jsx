@@ -3,6 +3,8 @@ import { facilities } from '../data';
 import CentreCard from '../components/CentreCard';
 import NOCHeader from '../../../components/NOCHeader';
 import '../noc.css';
+import { useDispatch } from 'react-redux';
+import { checkHealth, checkStatus } from '../../../store/noc/api';
 
 function getGlobalStats(facilityList) {
   const allDevices = facilityList.flatMap((f) => [...f.infrastructure, ...f.lanes.flatMap((l) => l.devices)]);
@@ -18,8 +20,13 @@ function getGlobalStats(facilityList) {
 
 export default function MultiCentreView() {
   const stats = getGlobalStats(facilities);
+  const dispatch = useDispatch();
 
-  useEffect(() => { document.title = 'Century Cricket — NOC Overview'; }, []);
+  useEffect(() => {
+    document.title = 'Century Cricket — NOC Overview';
+    dispatch(checkHealth());
+    dispatch(checkStatus());
+  }, [dispatch]);
 
   return (
     <div className="noc-page">
@@ -28,13 +35,23 @@ export default function MultiCentreView() {
         subtitle="NOC · Multi-Centre Overview"
         subtitleUppercase={true}
         logo={
-          <div style={{
-            width: 48, height: 48, borderRadius: 12,
-            background: '#2563eb', display: 'flex',
-            alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-          }}>
-            <span style={{ color: '#fff', fontWeight: 900, fontSize: 16, fontStyle: 'italic', letterSpacing: '-0.5px' }}>cc</span>
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              background: '#2563eb',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{ color: '#fff', fontWeight: 900, fontSize: 16, fontStyle: 'italic', letterSpacing: '-0.5px' }}
+            >
+              cc
+            </span>
           </div>
         }
         showTime={true}

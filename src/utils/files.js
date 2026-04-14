@@ -22,12 +22,6 @@ export function getFileType(name) {
   return 'other';
 }
 
-export function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
 export function parseDirectoryListing(html) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');

@@ -4,6 +4,7 @@ import MultiCentreView from './pages/noc/views/MultiCentreView';
 import CentreDevicesView from './pages/noc/views/CentreDevicesView';
 import LaneDetailsView from './pages/noc/views/LaneDetailsView';
 import PitchValidationPage from './pages/pitch-validation';
+import Maintenance from './pages/maintenance';
 
 function AppLayout() {
   return (
@@ -21,6 +22,7 @@ function AppLayout() {
           <Route path="/noc/:facilityCode/:laneId" element={<LaneDetailsView />} />
 
           <Route path="/pitchValidation" element={<PitchValidationPage />} />
+          <Route path="/maintenance/*" element={<Maintenance />} />
           <Route path="*" element={<Navigate to="/noc" replace />} />
         </Routes>
       </div>

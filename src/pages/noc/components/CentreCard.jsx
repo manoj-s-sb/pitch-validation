@@ -128,7 +128,12 @@ export default function CentreCard({ facility }) {
 
       {/* Footer */}
       <div className="cc-footer">
-        <button className="cc-topology-btn" onClick={(e) => { e.stopPropagation(); }}>
+        <button
+          className="cc-topology-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           View Topology →
         </button>
         <span className="cc-updated">Updated just now</span>

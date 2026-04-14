@@ -110,9 +110,7 @@ export default function CentreDevicesView() {
   const stats = facility ? calcStats(facility) : null;
 
   useEffect(() => {
-    document.title = facility
-      ? `Century Cricket — ${facility.name} Centre Overview`
-      : 'Century Cricket';
+    document.title = facility ? `Century Cricket — ${facility.name} Centre Overview` : 'Century Cricket';
   }, [facility]);
 
   function matchesFilter(device) {

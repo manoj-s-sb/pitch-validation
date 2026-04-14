@@ -10,9 +10,9 @@ function useSyncAgo() {
   useEffect(() => {
     const tick = () => {
       const secs = Math.floor((Date.now() - syncedAt.current) / 1000);
-      if (secs < 60)       setLabel(`${secs}s ago`);
+      if (secs < 60) setLabel(`${secs}s ago`);
       else if (secs < 3600) setLabel(`${Math.floor(secs / 60)} min ago`);
-      else                   setLabel(`${Math.floor(secs / 3600)} hr ago`);
+      else setLabel(`${Math.floor(secs / 3600)} hr ago`);
     };
     tick();
     const t = setInterval(tick, 10000);
@@ -22,7 +22,16 @@ function useSyncAgo() {
   return label;
 }
 
-export default function NOCHeader({ title, subtitle, subtitleUppercase = false, logo, icon: Icon, backPath, showTime = false, showSync = false }) {
+export default function NOCHeader({
+  title,
+  subtitle,
+  subtitleUppercase = false,
+  logo,
+  icon: Icon,
+  backPath,
+  showTime = false,
+  showSync = false,
+}) {
   const navigate = useNavigate();
   const [now, setNow] = useState(new Date());
   const syncLabel = useSyncAgo();
@@ -49,9 +58,7 @@ export default function NOCHeader({ title, subtitle, subtitleUppercase = false, 
         <div>
           <div className="noc-topbar-title">{title}</div>
           {subtitle && (
-            <div className={`noc-topbar-sub${subtitleUppercase ? ' noc-topbar-sub-upper' : ''}`}>
-              {subtitle}
-            </div>
+            <div className={`noc-topbar-sub${subtitleUppercase ? ' noc-topbar-sub-upper' : ''}`}>{subtitle}</div>
           )}
         </div>
         {showSync && (
