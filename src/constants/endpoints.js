@@ -2,6 +2,7 @@
 export const NOC_LOCAL = {
   HEALTH: '/health',
   STATUS: '/status',
+  LANE_STATUS: '/status',  // used as /{laneId}/status
 };
 
 // Cloud API endpoints  →  used with nocCloudApi (http://stancebema.com)

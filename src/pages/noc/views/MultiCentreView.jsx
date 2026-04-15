@@ -1,26 +1,89 @@
 import { useEffect } from 'react';
-import { facilities } from '../data';
 import CentreCard from '../components/CentreCard';
 import NOCHeader from '../../../components/NOCHeader';
 import '../noc.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { checkHealth, checkStatus } from '../../../store/noc/api';
 
-function getGlobalStats(facilityList) {
-  const allDevices = facilityList.flatMap((f) => [...f.infrastructure, ...f.lanes.flatMap((l) => l.devices)]);
+// Maps API resource keys to the icon names CentreCard understands
+const RESOURCE_ICON = {
+  bowlingMC:  'zap',
+  display:    'monitor',
+  lbaCamera:  'camera',
+  rbaCamera:  'camera',
+  lboCamera:  'camera',
+  rboCamera:  'camera',
+  miniPC:     'server',
+  tablet:     'tablet',
+};
+
+// Transforms /status API response → facility object shape that CentreCard expects
+function statusToFacility(status) {
+  if (!status) return null;
+
+  // Parse "Houston (HOU01)" → name="Houston", shortCode="HOU01", id="HOU01"
+  const match = status.facility.match(/^(.+?)\s*\(([^)]+)\)$/);
+  const name      = status.facility;
+  const shortCode = match ? match[2].trim() : 'FAC';
+  const id        = shortCode;
+  const location = 'USA';
+
+  console.log('Parsing facility from status:', { raw: status.facility, name, shortCode, id });
+
+  const lanes = Object.entries(status.lanes).map(([laneName, lane]) => ({
+    id:   lane.laneId,
+    name: laneName,
+    type:laneName.includes('b') ? 'Bowling' : 'Batting',   // not in API — default; update when API provides it
+    devices: Object.entries(lane.resources).map(([key, resource]) => ({
+      key,
+      name:   key,
+      status: resource.status,
+      icon:   RESOURCE_ICON[key] ?? 'server',
+      iface:  'ETH',
+      ip:     '—',
+      loc:    laneName,
+      uptime: resource.since
+        ? `since ${new Date(resource.since).toLocaleDateString()}`
+        : '—',
+    })),
+  }));
+
   return {
-    centres: facilityList.length,
-    totalLanes: facilityList.reduce((s, f) => s + f.lanes.length, 0),
-    total: allDevices.length,
-    online: allDevices.filter((d) => d.status === 'online').length,
-    offline: allDevices.filter((d) => d.status === 'offline').length,
-    warnings: allDevices.filter((d) => d.status === 'warning').length,
+    id,
+    name,
+    shortCode,
+    location:     location,
+    avatarColor:  '#3b82f6',
+    infrastructure: [],
+    lanes,
+  };
+}
+
+function getStatsFromStatus(status) {
+  if (!status) return { centres: 0, totalLanes: 0, total: 0, online: 0, offline: 0, warnings: 0 };
+
+  const allResources = Object.values(status.lanes).flatMap((lane) =>
+    Object.values(lane.resources)
+  );
+
+  return {
+    centres:    status.facility ? 1 : 0,
+    totalLanes: Object.keys(status.lanes).length,
+    battinglanes: Object.keys(status.lanes).filter((l) => l.includes('b') === false).length,
+    bowlinglanes: Object.keys(status.lanes).filter((l) => l.includes('b') === true).length,
+    total:      allResources.length,
+    online:     allResources.filter((r) => r.status === 'online').length,
+    offline:    allResources.filter((r) => r.status === 'offline').length,
+    warnings:   allResources.filter((r) => r.status === 'warning').length,
   };
 }
 
 export default function MultiCentreView() {
-  const stats = getGlobalStats(facilities);
   const dispatch = useDispatch();
+  const { status } = useSelector((state) => state.noc);
+
+  const stats    = getStatsFromStatus(status);
+  const facility = statusToFacility(status); 
 
   useEffect(() => {
     document.title = 'Century Cricket — NOC Overview';
@@ -47,9 +110,7 @@ export default function MultiCentreView() {
               flexShrink: 0,
             }}
           >
-            <span
-              style={{ color: '#fff', fontWeight: 900, fontSize: 16, fontStyle: 'italic', letterSpacing: '-0.5px' }}
-            >
+            <span style={{ color: '#fff', fontWeight: 900, fontSize: 16, fontStyle: 'italic', letterSpacing: '-0.5px' }}>
               cc
             </span>
           </div>
@@ -67,12 +128,16 @@ export default function MultiCentreView() {
         </div>
         <div className="mc-stat-cell">
           <div className="mc-stat-label">Total Lanes</div>
-          <div className="mc-stat-value">{stats.totalLanes}</div>
-          <div className="mc-stat-sub">Batting + Hybrid</div>
+          <div className="mc-stat-value">{stats.totalLanes || '—'}</div>
+          <div className="mc-stat-sub">
+            <span style={{ color: '#3b82f6' }}>{stats.battinglanes} Batting</span>
+            {' · '}
+            <span style={{ color: '#8b5cf6' }}>{stats.bowlinglanes} Bowling</span>
+          </div>
         </div>
         <div className="mc-stat-cell">
           <div className="mc-stat-label">Devices Online</div>
-          <div className="mc-stat-value mc-val-green">{stats.online}</div>
+          <div className="mc-stat-value mc-val-green">{stats.online || '—'}</div>
           <div className="mc-stat-sub">of {stats.total} total</div>
         </div>
         <div className="mc-stat-cell">
@@ -91,9 +156,11 @@ export default function MultiCentreView() {
       <div className="mc-body">
         <div className="mc-section-label">Cricket Centres</div>
         <div className="mc-grid">
-          {facilities.map((f) => (
-            <CentreCard key={f.id} facility={f} />
-          ))}
+          {facility ? (
+            <CentreCard key={facility.id} facility={facility} />
+          ) : (
+            <div className="mc-stat-sub">Loading facility data…</div>
+          )}
         </div>
       </div>
     </div>

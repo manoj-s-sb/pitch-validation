@@ -158,9 +158,15 @@
   flex-shrink: 0;
 }
 .cc-lane-batting {
-  background: #dbeafe;
-  color: #1d4ed8;
+ background-color: #E6F4EA;
+color: #1E7E34;
 }
+
+.cc-lane-bowling {
+  background-color: #E7F1FF;
+color: #0B5ED7;
+}
+
 .cc-lane-hybrid {
   background: #ede9fe;
   color: #6d28d9;

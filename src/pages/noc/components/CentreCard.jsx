@@ -127,7 +127,7 @@ export default function CentreCard({ facility }) {
       </div>
 
       {/* Footer */}
-      <div className="cc-footer">
+      {/* <div className="cc-footer">
         <button
           className="cc-topology-btn"
           onClick={(e) => {
@@ -137,7 +137,7 @@ export default function CentreCard({ facility }) {
           View Topology →
         </button>
         <span className="cc-updated">Updated just now</span>
-      </div>
+      </div> */}
     </div>
   );
 }
