@@ -50,6 +50,8 @@ const IssueCard = ({ item, index, onViewIssue }: IssueCardProps) => {
         : item.assignedTo
     : '';
 
+  const isNew = item.status === 'open' || item.status === 'issue';
+
   return (
     <div
       className="flex cursor-pointer overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
@@ -106,6 +108,9 @@ const IssueCard = ({ item, index, onViewIssue }: IssueCardProps) => {
           )}
         </div>
       </div>
+
+      {/* Right accent — red for new (open/issue) issues */}
+      {isNew && <div className="w-1 shrink-0 bg-red-500" />}
     </div>
   );
 };

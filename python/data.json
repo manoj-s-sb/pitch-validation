@@ -1,0 +1,104 @@
+{
+  "facility": "Houston (HOU01)",
+  "lastSummary": "2026-04-14T04:00:39-05:00",
+  "timestamp": "2026-04-14T04:24:32-05:00",
+  "lanes": {
+    "Lane 1": {
+      "healthy": true,
+      "laneId": 1,
+      "resources": {
+        "bowlingMC": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "USB device present: /dev/ttyUSB0", "since": "2026-02-10T22:36:20-06:00", "status": "online" },
+        "display":   { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "HDMI connected: card1-HDMI-A-1",   "since": "2026-03-12T15:44:01-05:00", "status": "online" },
+        "lbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12200mV (AC)",              "since": "2026-01-14T16:52:58-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "SSH connection successful",         "since": "2026-01-14T16:52:58-06:00", "status": "online" },
+        "rbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12200mV (AC)",              "since": "2026-04-13T11:33:17-05:00", "status": "online" }
+      }
+    },
+    "Lane 2": {
+      "healthy": false,
+      "laneId": 2,
+      "resources": {
+        "bowlingMC": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "USB device present: /dev/ttyUSB0", "since": "2026-02-10T23:22:02-06:00", "status": "online" },
+        "display":   { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "HDMI connected: card1-HDMI-A-1",   "since": "2026-02-10T23:22:02-06:00", "status": "online" },
+        "lbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12100mV (AC)",              "since": "2026-04-13T11:34:23-05:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "SSH connection successful",         "since": "2026-02-10T23:22:02-06:00", "status": "online" },
+        "rbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12000mV (AC)",              "since": "2026-01-14T16:52:58-06:00", "status": "offline" }
+      }
+    },
+    "Lane 3": {
+      "healthy": true,
+      "laneId": 3,
+      "resources": {
+        "bowlingMC": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "USB device present: /dev/ttyUSB0", "since": "2026-02-10T22:31:39-06:00", "status": "online" },
+        "display":   { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "HDMI connected: card1-HDMI-A-1",   "since": "2026-02-11T17:34:40-06:00", "status": "online" },
+        "lbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12100mV (AC)",              "since": "2026-01-14T16:52:58-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "SSH connection successful",         "since": "2026-01-14T16:52:58-06:00", "status": "online" },
+        "rbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12200mV (AC)",              "since": "2026-01-14T16:52:58-06:00", "status": "online" }
+      }
+    },
+    "Lane 4": {
+      "healthy": true,
+      "laneId": 4,
+      "resources": {
+        "bowlingMC": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "USB device present: /dev/ttyUSB0", "since": "2026-03-18T00:36:10-05:00", "status": "online" },
+        "display":   { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "HDMI connected: card1-HDMI-A-1",   "since": "2026-03-18T00:36:10-05:00", "status": "online" },
+        "lbaCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12100mV (AC)",              "since": "2026-01-14T16:52:32-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "SSH connection successful",         "since": "2026-03-18T00:34:56-05:00", "status": "online" },
+        "rbaCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12100mV (AC)",              "since": "2026-01-14T16:52:32-06:00", "status": "online" }
+      }
+    },
+    "Lane 5": {
+      "healthy": true,
+      "laneId": 5,
+      "resources": {
+        "bowlingMC": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "USB device present: /dev/ttyUSB0", "since": "2026-03-05T05:38:57-06:00", "status": "online" },
+        "display":   { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "HDMI connected: card1-HDMI-A-1",   "since": "2026-03-05T05:38:57-06:00", "status": "online" },
+        "lbaCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12100mV (AC)",              "since": "2026-01-14T16:52:32-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "SSH connection successful",         "since": "2026-03-05T05:38:57-06:00", "status": "online" },
+        "rbaCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12200mV (AC)",              "since": "2026-01-14T16:52:32-06:00", "status": "online" }
+      }
+    },
+    "Lane 6": {
+      "healthy": true,
+      "laneId": 6,
+      "resources": {
+        "bowlingMC": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "USB device present: /dev/ttyUSB0", "since": "2026-02-10T23:23:13-06:00", "status": "warning" },
+        "display":   { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "HDMI connected: card1-HDMI-A-1",   "since": "2026-02-10T23:23:13-06:00", "status": "online" },
+        "lbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12200mV (AC)",              "since": "2026-01-15T16:04:33-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "SSH connection successful",         "since": "2026-02-10T23:23:13-06:00", "status": "online" },
+        "rbaCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12000mV (AC)",              "since": "2026-01-14T16:52:58-06:00", "status": "online" }
+      }
+    },
+    "Lane 6b": {
+      "healthy": true,
+      "laneId": 60,
+      "resources": {
+        "display":   { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "HDMI connected: card0-HDMI-A-1", "since": "2026-04-01T09:17:52-05:00", "status": "online" },
+        "lboCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12100mV (AC)",            "since": "2026-01-14T16:52:58-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "SSH connection successful",       "since": "2026-04-01T01:14:21-05:00", "status": "online" },
+        "rboCamera": { "checkedAt": "2026-04-14T04:24:22-05:00", "description": "Power: 12200mV (AC)",            "since": "2026-01-15T15:42:59-06:00", "status": "online" }
+      }
+    },
+    "Lane 7": {
+      "healthy": true,
+      "laneId": 7,
+      "resources": {
+        "bowlingMC": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "USB device present: /dev/ttyUSB0", "since": "2026-02-23T01:19:06-06:00", "status": "online" },
+        "display":   { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "HDMI connected: card1-HDMI-A-1",   "since": "2026-02-10T23:24:58-06:00", "status": "online" },
+        "lbaCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12100mV (AC)",              "since": "2026-01-14T16:52:32-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "SSH connection successful",         "since": "2026-02-10T23:24:58-06:00", "status": "online" },
+        "rbaCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12100mV (AC)",              "since": "2026-01-14T16:52:32-06:00", "status": "online" }
+      }
+    },
+    "Lane 7b": {
+      "healthy": true,
+      "laneId": 70,
+      "resources": {
+        "display":   { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "HDMI connected: card0-HDMI-A-1", "since": "2026-04-08T09:12:09-05:00", "status": "online" },
+        "lboCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12100mV (AC)",            "since": "2026-01-14T16:52:32-06:00", "status": "online" },
+        "miniPC":    { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "SSH connection successful",       "since": "2026-04-08T09:12:09-05:00", "status": "online" },
+        "rboCamera": { "checkedAt": "2026-04-14T04:24:16-05:00", "description": "Power: 12100mV (AC)",            "since": "2026-03-19T00:04:57-05:00", "status": "online" }
+      }
+    }
+  }
+}

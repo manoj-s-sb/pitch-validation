@@ -85,11 +85,12 @@
 }
 .cc-stat-val {
   font-size: 30px;
-  font-weight: 800;
-  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
   color: #111;
   line-height: 1;
   margin-bottom: 5px;
+  letter-spacing: -0.5px;
 }
 .cc-stat-lbl {
   font-size: 9px;
@@ -202,6 +203,7 @@ color: #0B5ED7;
   background: #fee2e2;
   padding: 2px 8px;
   border-radius: 20px;
+  animation: cc-heartbeat-red 1.2s ease-in-out infinite;
 }
 .cc-warn {
   font-size: 12px;
@@ -210,6 +212,47 @@ color: #0B5ED7;
   background: #fef3c7;
   padding: 2px 8px;
   border-radius: 20px;
+  animation: cc-heartbeat-amber 1.5s ease-in-out infinite;
+}
+@keyframes cc-heartbeat-red {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    background: #fee2e2;
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.25);
+    background: #fca5a5;
+  }
+  60% {
+    opacity: 0.75;
+    transform: scale(0.97);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+    background: #fee2e2;
+  }
+}
+@keyframes cc-heartbeat-amber {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0);
+    background: #fef3c7;
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow: 0 0 0 5px rgba(217, 119, 6, 0.25);
+    background: #fde68a;
+  }
+  60% {
+    opacity: 0.75;
+    transform: scale(0.97);
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.1);
+    background: #fef3c7;
+  }
 }
 
 /* ── Device icons ── */
@@ -241,6 +284,20 @@ color: #0B5ED7;
   height: 8px;
   border-radius: 50%;
   border: 2px solid #fff;
+}
+.cc-dev-dot--offline {
+  animation: cc-pulse-red 1.4s ease-in-out infinite;
+}
+.cc-dev-dot--warning {
+  animation: cc-pulse-orange 1.8s ease-in-out infinite;
+}
+@keyframes cc-pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  50%       { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+}
+@keyframes cc-pulse-orange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+  50%       { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0); }
 }
 
 /* ── Footer ── */

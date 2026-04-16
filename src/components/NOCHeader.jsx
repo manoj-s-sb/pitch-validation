@@ -1,23 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import '../pages/noc/noc.css';
 
-function useSyncAgo() {
-  const syncedAt = useRef(new Date());
+function useSyncAgo(lastSynced) {
   const [label, setLabel] = useState('just now');
 
   useEffect(() => {
     const tick = () => {
-      const secs = Math.floor((Date.now() - syncedAt.current) / 1000);
+      const secs = Math.floor((Date.now() - lastSynced.getTime()) / 1000);
       if (secs < 60) setLabel(`${secs}s ago`);
       else if (secs < 3600) setLabel(`${Math.floor(secs / 60)} min ago`);
       else setLabel(`${Math.floor(secs / 3600)} hr ago`);
     };
     tick();
-    const t = setInterval(tick, 10000);
+    const t = setInterval(tick, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [lastSynced]);
 
   return label;
 }
@@ -31,10 +30,13 @@ export default function NOCHeader({
   backPath,
   showTime = false,
   showSync = false,
+  lastSynced,
+  onRefresh,
+  refreshing = false,
 }) {
   const navigate = useNavigate();
   const [now, setNow] = useState(new Date());
-  const syncLabel = useSyncAgo();
+  const syncLabel = useSyncAgo(lastSynced ?? new Date());
 
   useEffect(() => {
     if (!showTime) return;
@@ -62,9 +64,21 @@ export default function NOCHeader({
           )}
         </div>
         {showSync && (
-          <div className="noc-sync-badge">
-            <RefreshCw size={11} />
-            Synced {syncLabel}
+          <div className="noc-sync-group">
+            <div className="noc-sync-badge">
+              <RefreshCw size={11} className={refreshing ? 'noc-sync-spinning' : ''} />
+              Synced {syncLabel}
+            </div>
+            {onRefresh && (
+              <button
+                className="noc-refresh-btn"
+                onClick={onRefresh}
+                disabled={refreshing}
+                title="Refresh now"
+              >
+                <RefreshCw size={13} className={refreshing ? 'noc-sync-spinning' : ''} />
+              </button>
+            )}
           </div>
         )}
       </div>

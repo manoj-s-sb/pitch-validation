@@ -116,7 +116,10 @@ export default function CentreCard({ facility }) {
                   return (
                     <div key={i} className="cc-dev-icon" title={d.name}>
                       <Icon size={13} strokeWidth={1.8} />
-                      <span className="cc-dev-dot" style={{ background: statusDot[d.status] }} />
+                      <span
+                        className={`cc-dev-dot${d.status === 'offline' ? ' cc-dev-dot--offline' : d.status === 'warning' ? ' cc-dev-dot--warning' : ''}`}
+                        style={{ background: statusDot[d.status] }}
+                      />
                     </div>
                   );
                 })}

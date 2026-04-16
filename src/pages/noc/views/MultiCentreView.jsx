@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import CentreCard from '../components/CentreCard';
 import NOCHeader from '../../../components/NOCHeader';
 import '../noc.css';
@@ -28,12 +28,10 @@ function statusToFacility(status) {
   const id        = shortCode;
   const location = 'USA';
 
-  console.log('Parsing facility from status:', { raw: status.facility, name, shortCode, id });
-
   const lanes = Object.entries(status.lanes).map(([laneName, lane]) => ({
     id:   lane.laneId,
     name: laneName,
-    type:laneName.includes('b') ? 'Bowling' : 'Batting',   // not in API — default; update when API provides it
+    type: /b$/i.test(laneName.trim()) ? 'Bowling' : 'Batting',
     devices: Object.entries(lane.resources).map(([key, resource]) => ({
       key,
       name:   key,
@@ -78,18 +76,34 @@ function getStatsFromStatus(status) {
   };
 }
 
+const AUTO_REFRESH_MS = 2 * 60 * 1000; // 2 minutes
+
 export default function MultiCentreView() {
   const dispatch = useDispatch();
-  const { status } = useSelector((state) => state.noc);
+  const { status, loading } = useSelector((state) => state.noc);
+  const [lastSynced, setLastSynced] = useState(new Date());
 
   const stats    = getStatsFromStatus(status);
-  const facility = statusToFacility(status); 
+  const facility = statusToFacility(status);
 
+  const refresh = useCallback(() => {
+    Promise.all([
+      dispatch(checkHealth()),
+      dispatch(checkStatus()),
+    ]).then(() => setLastSynced(new Date()));
+  }, [dispatch]);
+
+  // Initial load
   useEffect(() => {
     document.title = 'Century Cricket — NOC Overview';
-    dispatch(checkHealth());
-    dispatch(checkStatus());
-  }, [dispatch]);
+    refresh();
+  }, [refresh]);
+
+  // Auto-refresh every 2 minutes
+  useEffect(() => {
+    const t = setInterval(refresh, AUTO_REFRESH_MS);
+    return () => clearInterval(t);
+  }, [refresh]);
 
   return (
     <div className="noc-page">
@@ -117,6 +131,9 @@ export default function MultiCentreView() {
         }
         showTime={true}
         showSync={true}
+        lastSynced={lastSynced}
+        onRefresh={refresh}
+        refreshing={loading}
       />
 
       {/* Global stats bar */}
