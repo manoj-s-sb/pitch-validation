@@ -9,6 +9,7 @@ import CSVTable from './components/CSVTable';
 import PitchMapping from './components/PitchMapping';
 import BulkUpload from './components/BulkUpload';
 import { SERVER, getExt, getFileType, parseDirectoryListing } from './utils/files';
+import { parseScoringStats } from './utils/pitch';
 import { generateSessionReportCSV, generateBulkReportCSV, downloadCSV } from './utils/reports';
 
 const BASE_PATH = '/';
@@ -26,6 +27,10 @@ export default function App() {
   const [modalTitle, setModalTitle] = useState('');
   const [currentFileUrl, setCurrentFileUrl] = useState('');
   const [currentCsvData, setCurrentCsvData] = useState(null);
+  const [scoringCsvData, setScoringCsvData] = useState(null);
+
+  // Per-session scoring summary (keyed by folder href) for the session list tiles
+  const [sessionStats, setSessionStats] = useState({});
   const [modalView, setModalView] = useState(null); // 'image' | 'video' | 'audio' | 'csv-table' | 'csv-pitchmap' | 'text' | 'pdf' | 'no-preview' | 'bulk-upload' | 'bulk-view'
   const [modalContent, setModalContent] = useState(null); // for text/other content
 
@@ -82,6 +87,44 @@ export default function App() {
     navigate(BASE_PATH);
   }, [navigate]);
 
+  // When a listing contains session folders, pull each session's scoring_stats.csv
+  // so the tiles can show runs/wickets without opening the session.
+  useEffect(() => {
+    const sessionDirs = allItems.filter((i) => i.isDir && i.name.toLowerCase().startsWith('session'));
+    setSessionStats({});
+    if (sessionDirs.length === 0) return;
+
+    let cancelled = false;
+    (async () => {
+      const results = await Promise.all(
+        sessionDirs.map(async (dir) => {
+          try {
+            const resp = await axios.get(SERVER + currentPath + dir.href + 'scoring_stats.csv', {
+              responseType: 'text',
+              transformResponse: [(d) => d],
+            });
+            if (typeof resp.data === 'string' && resp.data.includes('Ball Number')) {
+              return [dir.href, parseScoringStats(resp.data).summary];
+            }
+          } catch {
+            /* session has no scoring_stats.csv — tile just shows no score */
+          }
+          return [dir.href, null];
+        }),
+      );
+      if (cancelled) return;
+      const map = {};
+      results.forEach(([href, summary]) => {
+        if (summary) map[href] = summary;
+      });
+      setSessionStats(map);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [allItems, currentPath]);
+
   // Drag & drop on main content
   useEffect(() => {
     const content = contentRef.current;
@@ -131,6 +174,7 @@ export default function App() {
     setCurrentFileUrl(url);
     setModalTitle(name);
     setCurrentCsvData(null);
+    setScoringCsvData(null);
     setBulkMode(false);
 
     const type = getFileType(name);
@@ -155,6 +199,21 @@ export default function App() {
         setModalContent(resp.data);
       } catch {
         setModalContent('error');
+      }
+      // For a session's stats.csv, also pull the sibling scoring_stats.csv (batting outcomes)
+      if (name.toLowerCase() === 'stats.csv') {
+        const dir = url.substring(0, url.lastIndexOf('/') + 1);
+        try {
+          const scoringResp = await axios.get(dir + 'scoring_stats.csv', {
+            responseType: 'text',
+            transformResponse: [(d) => d],
+          });
+          if (typeof scoringResp.data === 'string' && scoringResp.data.includes('Ball Number')) {
+            setScoringCsvData(scoringResp.data);
+          }
+        } catch {
+          /* no scoring_stats.csv in this session — scoreboard just stays hidden */
+        }
       }
       return;
     } else if (
@@ -206,6 +265,7 @@ export default function App() {
   const closeModal = useCallback(() => {
     setModalOpen(false);
     setCurrentCsvData(null);
+    setScoringCsvData(null);
     setBulkMode(false);
     setModalView(null);
     setModalContent(null);
@@ -438,7 +498,7 @@ export default function App() {
         return <CSVTable csvText={modalContent} />;
 
       case 'csv-pitchmap':
-        return <PitchMapping csvText={modalContent} />;
+        return <PitchMapping csvText={modalContent} scoringCsvText={scoringCsvData} />;
 
       case 'text':
         if (modalContent === 'loading') {
@@ -578,6 +638,7 @@ export default function App() {
             items={filteredItems}
             viewMode={viewMode}
             currentPath={currentPath}
+            sessionStats={sessionStats}
             onNavigate={navigate}
             onOpenFile={openFile}
           />

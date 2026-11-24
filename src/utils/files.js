@@ -1,4 +1,4 @@
-export const SERVER = 'http://192.168.0.111:6060';
+export const SERVER = 'http://192.168.1.111:6060';
 
 export const EXT_MAP = {
   image: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'ico', 'tiff'],
@@ -20,6 +20,23 @@ export function getFileType(name) {
     if (exts.includes(ext)) return type;
   }
   return 'other';
+}
+
+const MONTHS = {
+  jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+  jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+};
+
+// Turn an autoindex date ("24-Nov-2026", "07:59[:12]") into a sortable epoch ms.
+export function parseListingDate(dmy, hms) {
+  const m = dmy.match(/(\d{1,2})-([A-Za-z]{3})-(\d{4})/);
+  if (!m) return NaN;
+  const day = parseInt(m[1], 10);
+  const month = MONTHS[m[2].toLowerCase()];
+  const year = parseInt(m[3], 10);
+  if (month === undefined) return NaN;
+  const [hh = 0, mm = 0, ss = 0] = (hms || '').split(':').map((v) => parseInt(v, 10) || 0);
+  return Date.UTC(year, month, day, hh, mm, ss);
 }
 
 export function escapeHtml(str) {
@@ -44,17 +61,34 @@ export function parseDirectoryListing(html) {
     const isDir = href.endsWith('/');
     name = decodeURIComponent(name).replace(/\/$/, '');
 
+    // In an Apache/nginx autoindex, the modified date and size sit in the text
+    // node that follows the link, e.g. "   24-Nov-2026 07:59       -"
+    const trailing = a.nextSibling ? a.nextSibling.textContent : '';
+
+    let date = '';
+    let ts = NaN;
+    const dateMatch = trailing.match(/(\d{1,2}-[A-Za-z]{3}-\d{4})\s+(\d{1,2}:\d{2}(?::\d{2})?)/);
+    if (dateMatch) {
+      date = `${dateMatch[1]} ${dateMatch[2]}`;
+      ts = parseListingDate(dateMatch[1], dateMatch[2]);
+    }
+
     let size = '';
-    const parentText = a.parentElement ? a.parentElement.textContent : '';
-    const sizeMatch = parentText.match(/(\d+[.\d]*[KMGT]?)\s*$/i);
+    const sizeMatch = trailing.trim().match(/([\d.]+[KMGT]?)\s*$/i);
     if (sizeMatch) size = sizeMatch[1];
 
-    items.push({ name, href: decodeURIComponent(href), isDir, size });
+    items.push({ name, href: decodeURIComponent(href), isDir, size, date, ts });
   });
 
   items.sort((a, b) => {
     if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
-    return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+    // Numbered folders (ball 1, 2, 3 …) keep their natural numeric order.
+    const an = Number(a.name);
+    const bn = Number(b.name);
+    if (a.name !== '' && b.name !== '' && !isNaN(an) && !isNaN(bn)) return an - bn;
+    // Otherwise (sessions, bookings) show newest first when both have a timestamp.
+    if (!isNaN(a.ts) && !isNaN(b.ts) && a.ts !== b.ts) return b.ts - a.ts;
+    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
   });
 
   return items;

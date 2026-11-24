@@ -77,6 +77,84 @@ export function parsePitchBalls(csvText) {
   return { balls, colIdx };
 }
 
+// Parse scoring_stats.csv (cricket outcome per ball) into a per-ball lookup + summary.
+// Joins to stats.csv on "Ball Number" <-> "Ball ID".
+export function parseScoringStats(csvText) {
+  const empty = { byBall: {}, summary: null };
+  if (!csvText || typeof csvText !== 'string') return empty;
+
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) return empty;
+
+  const headers = rows[0].map((h) => h.trim());
+  const idx = {};
+  headers.forEach((h, i) => {
+    idx[h] = i;
+  });
+
+  const get = (row, name) => {
+    const i = idx[name];
+    return i !== undefined ? (row[i] ?? '').trim() : '';
+  };
+
+  const isWicket = (wicketVal, dismissalVal) => {
+    const w = (wicketVal || '').toLowerCase();
+    if (dismissalVal) return true;
+    return w !== '' && w !== 'not_out' && w !== 'notout' && w !== 'no' && w !== 'none';
+  };
+
+  const byBall = {};
+  let totalRuns = 0;
+  let wickets = 0;
+  let fours = 0;
+  let sixes = 0;
+  let dots = 0;
+  let count = 0;
+
+  rows.slice(1).forEach((row) => {
+    if (!row || row.length === 0) return;
+    const ballNum = get(row, 'Ball Number');
+    if (ballNum === '') return;
+
+    const runs = parseInt(get(row, 'Runs'), 10);
+    const runsVal = isNaN(runs) ? 0 : runs;
+    const dismissal = get(row, 'Dismissal');
+    const wicketRaw = get(row, 'Wicket');
+    const out = isWicket(wicketRaw, dismissal);
+
+    const entry = {
+      ballNumber: ballNum,
+      runs: isNaN(runs) ? null : runs,
+      out,
+      dismissal,
+      fielder: get(row, 'Fielder'),
+      direction: get(row, 'Ball Direction'),
+      travel: get(row, 'Ball Travel (m)'),
+      maxHeight: get(row, 'Max Height (m)'),
+      bounced: get(row, 'Bounced'),
+      scoringCheck: get(row, 'Scoring Check'),
+    };
+    byBall[String(ballNum)] = entry;
+
+    totalRuns += runsVal;
+    count++;
+    if (out) wickets++;
+    if (runsVal === 4) fours++;
+    if (runsVal === 6) sixes++;
+    if (runsVal === 0 && !out) dots++;
+  });
+
+  if (count === 0) return empty;
+
+  const overs = count / 6;
+  const runRate = overs > 0 ? totalRuns / overs : 0;
+
+  return {
+    byBall,
+    summary: { balls: count, totalRuns, wickets, fours, sixes, dots, runRate },
+  };
+}
+
 export function configXtoCm(x) {
   return x - 150;
 }

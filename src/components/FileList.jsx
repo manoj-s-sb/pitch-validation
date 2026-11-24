@@ -22,7 +22,7 @@ function FileIcon({ name, isDir }) {
   return <Icon size={32} style={{ color, strokeWidth: 1.5 }} />;
 }
 
-export default function FileList({ items, viewMode, currentPath, onNavigate, onOpenFile }) {
+export default function FileList({ items, viewMode, currentPath, sessionStats = {}, onNavigate, onOpenFile }) {
   if (items.length === 0) {
     return (
       <div className="status">
@@ -34,25 +34,39 @@ export default function FileList({ items, viewMode, currentPath, onNavigate, onO
 
   return (
     <div className={`file-list ${viewMode}`}>
-      {items.map((item, i) => (
-        <div
-          key={item.name + i}
-          className={`file-item ${item.isDir ? 'dir-item' : ''}`}
-          onClick={() => {
-            if (item.isDir) {
-              onNavigate(currentPath + item.href);
-            } else {
-              onOpenFile(item.name, currentPath + item.href);
-            }
-          }}
-        >
-          <div className="icon">
-            <FileIcon name={item.name} isDir={item.isDir} />
+      {items.map((item, i) => {
+        const score = sessionStats[item.href];
+        return (
+          <div
+            key={item.name + i}
+            className={`file-item ${item.isDir ? 'dir-item' : ''}`}
+            onClick={() => {
+              if (item.isDir) {
+                onNavigate(currentPath + item.href);
+              } else {
+                onOpenFile(item.name, currentPath + item.href);
+              }
+            }}
+          >
+            <div className="icon">
+              <FileIcon name={item.name} isDir={item.isDir} />
+            </div>
+            <div className="name">{item.name}</div>
+            {score && (
+              <div className="score-badge" title={`${score.totalRuns} runs, ${score.wickets} wickets in ${score.balls} balls`}>
+                <span className="score-badge-val">
+                  {score.totalRuns}/{score.wickets}
+                </span>
+                <span className="score-badge-lbl">{score.balls} balls</span>
+              </div>
+            )}
+            <div className="meta-row">
+              {item.date && <div className="meta">{item.date}</div>}
+              {item.size && <div className="meta">{item.size}</div>}
+            </div>
           </div>
-          <div className="name">{item.name}</div>
-          {item.size && <div className="meta">{item.size}</div>}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

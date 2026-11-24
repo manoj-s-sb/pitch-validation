@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'lucide-react';
-import { parsePitchBalls, getLineLabel, getLengthLabel, LENGTH_BANDS, PITCH_PARAMS } from '../utils/pitch';
+import {
+  parsePitchBalls,
+  parseScoringStats,
+  getLineLabel,
+  getLengthLabel,
+  LENGTH_BANDS,
+  PITCH_PARAMS,
+} from '../utils/pitch';
 
 function showCopyToast(msg) {
   const existing = document.querySelector('.copy-toast-global');
@@ -12,10 +19,134 @@ function showCopyToast(msg) {
   setTimeout(() => toast.remove(), 1500);
 }
 
-export default function PitchMapping({ csvText }) {
+// Colour a run value: boundaries stand out, dot balls muted.
+function runColor(runs) {
+  if (runs === 6) return '#7c3aed';
+  if (runs === 4) return '#2563eb';
+  if (runs === 0) return 'var(--text-dim)';
+  return '#16a34a';
+}
+
+function RunBadge({ runs, out }) {
+  if (out) {
+    return <span className="run-badge wicket">W</span>;
+  }
+  if (runs === null || runs === undefined) return null;
+  return (
+    <span className="run-badge" style={{ color: runColor(runs), borderColor: runColor(runs) }}>
+      {runs}
+    </span>
+  );
+}
+
+function Scoreboard({ summary }) {
+  if (!summary) return null;
+  const { balls, totalRuns, wickets, fours, sixes, dots, runRate } = summary;
+  const overs = `${Math.floor(balls / 6)}.${balls % 6}`;
+  return (
+    <div className="scoreboard">
+      <div className="scoreboard-main">
+        <div className="scoreboard-score">
+          {totalRuns}
+          <span className="scoreboard-slash">/</span>
+          {wickets}
+        </div>
+        <div className="scoreboard-overs">{overs} ov</div>
+      </div>
+      <div className="scoreboard-chips">
+        <div className="score-chip">
+          <span className="score-chip-val">{balls}</span>
+          <span className="score-chip-lbl">Balls</span>
+        </div>
+        <div className="score-chip">
+          <span className="score-chip-val">{runRate.toFixed(1)}</span>
+          <span className="score-chip-lbl">Run Rate</span>
+        </div>
+        <div className="score-chip">
+          <span className="score-chip-val" style={{ color: '#2563eb' }}>
+            {fours}
+          </span>
+          <span className="score-chip-lbl">Fours</span>
+        </div>
+        <div className="score-chip">
+          <span className="score-chip-val" style={{ color: '#7c3aed' }}>
+            {sixes}
+          </span>
+          <span className="score-chip-lbl">Sixes</span>
+        </div>
+        <div className="score-chip">
+          <span className="score-chip-val">{dots}</span>
+          <span className="score-chip-lbl">Dots</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BallOutcome({ entry }) {
+  if (!entry) return null;
+  const outLabel = entry.out ? entry.dismissal || 'Wicket' : 'Not Out';
+  return (
+    <div className="pitch-detail-section">
+      <h4 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />{' '}
+        Ball Outcome
+      </h4>
+      <div className="pitch-info-grid">
+        <div className="pitch-info-card">
+          <div className="label">Runs</div>
+          <div className="value" style={{ color: entry.out ? '#dc2626' : runColor(entry.runs ?? 0), fontSize: 20 }}>
+            {entry.out ? 'OUT' : (entry.runs ?? '-')}
+          </div>
+        </div>
+        <div className="pitch-info-card">
+          <div className="label">Result</div>
+          <div className="value" style={{ fontSize: 14, color: entry.out ? '#dc2626' : 'var(--text)' }}>
+            {outLabel}
+          </div>
+        </div>
+        {entry.direction && (
+          <div className="pitch-info-card">
+            <div className="label">Direction</div>
+            <div className="value" style={{ fontSize: 13 }}>
+              {entry.direction}
+            </div>
+          </div>
+        )}
+        {entry.fielder && (
+          <div className="pitch-info-card">
+            <div className="label">Fielder</div>
+            <div className="value" style={{ fontSize: 13 }}>
+              {entry.fielder}
+            </div>
+          </div>
+        )}
+        {entry.travel && (
+          <div className="pitch-info-card">
+            <div className="label">Travel</div>
+            <div className="value" style={{ fontSize: 14 }}>
+              {entry.travel} <span style={{ fontSize: 11, fontWeight: 400 }}>m</span>
+            </div>
+          </div>
+        )}
+        {entry.maxHeight && (
+          <div className="pitch-info-card">
+            <div className="label">Max Height</div>
+            <div className="value" style={{ fontSize: 14 }}>
+              {entry.maxHeight} <span style={{ fontSize: 11, fontWeight: 400 }}>m</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function PitchMapping({ csvText, scoringCsvText }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showAll, setShowAll] = useState(true);
   const [pitchData, setPitchData] = useState({ balls: [], colIdx: {} });
+  const [scoring, setScoring] = useState({ byBall: {}, summary: null });
 
   useEffect(() => {
     const data = parsePitchBalls(csvText);
@@ -23,6 +154,10 @@ export default function PitchMapping({ csvText }) {
     setSelectedIndex(0);
     setShowAll(true);
   }, [csvText]);
+
+  useEffect(() => {
+    setScoring(parseScoringStats(scoringCsvText));
+  }, [scoringCsvText]);
 
   const { balls, colIdx } = pitchData;
 
@@ -185,6 +320,7 @@ export default function PitchMapping({ csvText }) {
 
       {/* RIGHT: Ball selector + detail */}
       <div className="pitch-detail-panel">
+        <Scoreboard summary={scoring.summary} />
         <div className="ball-selector">
           <button className={`ball-selector-btn ${showAll ? 'active' : ''}`} onClick={handleSelectAll}>
             <span
@@ -196,6 +332,7 @@ export default function PitchMapping({ csvText }) {
           {balls.map((ball, i) => {
             const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
             const spdText = !isNaN(releaseSpd) ? ` (${Math.round(releaseSpd)} km/h)` : '';
+            const score = scoring.byBall[String(ball.ballId)];
             return (
               <button
                 key={i}
@@ -208,6 +345,7 @@ export default function PitchMapping({ csvText }) {
                 />
                 Ball {String(ball.ballId)}
                 {spdText}
+                {score && <RunBadge runs={score.runs} out={score.out} />}
               </button>
             );
           })}
@@ -217,7 +355,11 @@ export default function PitchMapping({ csvText }) {
           {showAll ? (
             <AllBallsDetail balls={balls} colIdx={colIdx} />
           ) : selectedBall ? (
-            <BallDetail ball={selectedBall} colIdx={colIdx} />
+            <BallDetail
+              ball={selectedBall}
+              colIdx={colIdx}
+              scoringEntry={scoring.byBall[String(selectedBall.ballId)]}
+            />
           ) : null}
         </div>
       </div>
@@ -225,7 +367,7 @@ export default function PitchMapping({ csvText }) {
   );
 }
 
-function BallDetail({ ball, colIdx }) {
+function BallDetail({ ball, colIdx, scoringEntry }) {
   const releaseSpd = parseFloat(ball.releaseSpeed) * 1.05;
   const spdVal = !isNaN(releaseSpd) ? Math.round(releaseSpd) : '-';
   const pitchSpd = parseFloat(ball.speed);
@@ -241,6 +383,9 @@ function BallDetail({ ball, colIdx }) {
 
   return (
     <>
+      {/* Ball Outcome (from scoring_stats.csv) */}
+      <BallOutcome entry={scoringEntry} />
+
       {/* Config (Set) */}
       <div className="pitch-detail-section">
         <h4 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
