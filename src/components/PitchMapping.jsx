@@ -19,6 +19,40 @@ function showCopyToast(msg) {
   setTimeout(() => toast.remove(), 1500);
 }
 
+// Case-insensitive column lookup (CSV header is "inSwing", "deviation", etc.)
+function findCol(colIdx, ...names) {
+  const lower = {};
+  Object.keys(colIdx).forEach((k) => {
+    lower[k.toLowerCase()] = colIdx[k];
+  });
+  for (const n of names) {
+    if (lower[n.toLowerCase()] !== undefined) return lower[n.toLowerCase()];
+  }
+  return undefined;
+}
+
+// Column has at least one non-empty value across the balls (0 counts as a value).
+function colHasValues(balls, idx) {
+  if (idx === undefined) return false;
+  return balls.some((b) => b.row[idx] !== undefined && String(b.row[idx]).trim() !== '');
+}
+
+// Format a swing/deviation value with its direction. +ve In / Off Spin, -ve Out / Leg Spin.
+function swingText(raw, kind) {
+  if (raw === undefined || String(raw).trim() === '') return '-';
+  const n = parseFloat(raw);
+  if (isNaN(n)) return String(raw);
+  if (n === 0) return '0';
+  const dir = kind === 'inswing' ? (n > 0 ? 'In' : 'Out') : n > 0 ? 'Off' : 'Leg';
+  return `${n > 0 ? '+' : ''}${n} ${dir}`;
+}
+
+function swingColor(raw) {
+  const n = parseFloat(raw);
+  if (isNaN(n) || n === 0) return 'var(--text)';
+  return n > 0 ? '#2563eb' : '#dc2626';
+}
+
 // Colour a run value: boundaries stand out, dot balls muted.
 function runColor(runs) {
   if (runs === 6) return '#7c3aed';
@@ -545,28 +579,32 @@ function BallDetail({ ball, colIdx, scoringEntry }) {
         </div>
       </div>
 
-      {/* Inswing & Deviation — only show when value is non-zero */}
+      {/* Inswing & Deviation */}
       {(() => {
-        const inswingCol = colIdx['INSWING'] ?? colIdx['Inswing'] ?? colIdx['inswing'];
-        const deviationCol = colIdx['DEVIATION'] ?? colIdx['Deviation'] ?? colIdx['deviation'];
+        const inswingCol = findCol(colIdx, 'inSwing', 'Inswing', 'INSWING', 'inswing');
+        const deviationCol = findCol(colIdx, 'deviation', 'Deviation', 'DEVIATION');
         const inswingVal = inswingCol !== undefined ? ball.row[inswingCol] : undefined;
         const deviationVal = deviationCol !== undefined ? ball.row[deviationCol] : undefined;
-        const showInswing = inswingVal !== undefined && parseFloat(inswingVal) !== 0 && inswingVal !== '';
-        const showDeviation = deviationVal !== undefined && parseFloat(deviationVal) !== 0 && deviationVal !== '';
+        const showInswing = inswingVal !== undefined && String(inswingVal).trim() !== '';
+        const showDeviation = deviationVal !== undefined && String(deviationVal).trim() !== '';
         if (!showInswing && !showDeviation) return null;
         return (
           <div className="pitch-detail-section">
             <div className="pitch-info-grid">
               {showInswing && (
-                <div className="pitch-info-card">
-                  <div className="label">Inswing</div>
-                  <div className="value">{inswingVal}</div>
+                <div className="pitch-info-card" title="In = positive, Out = negative">
+                  <div className="label">Swing</div>
+                  <div className="value" style={{ fontSize: 15, color: swingColor(inswingVal) }}>
+                    {swingText(inswingVal, 'inswing')}
+                  </div>
                 </div>
               )}
               {showDeviation && (
-                <div className="pitch-info-card">
+                <div className="pitch-info-card" title="Off Spin = positive, Leg Spin = negative">
                   <div className="label">Deviation</div>
-                  <div className="value">{deviationVal}</div>
+                  <div className="value" style={{ fontSize: 15, color: swingColor(deviationVal) }}>
+                    {swingText(deviationVal, 'deviation')}
+                  </div>
                 </div>
               )}
             </div>
@@ -630,20 +668,10 @@ function AllBallsDetail({ balls, colIdx }) {
     return colIdx[p.setCol] !== undefined || colIdx[p.readCol] !== undefined;
   });
 
-  const inswingCol = colIdx['INSWING'] ?? colIdx['Inswing'] ?? colIdx['inswing'];
-  const deviationCol = colIdx['DEVIATION'] ?? colIdx['Deviation'] ?? colIdx['deviation'];
-  const hasInswing =
-    inswingCol !== undefined &&
-    balls.some((b) => {
-      const v = b.row[inswingCol];
-      return v !== undefined && v !== '' && parseFloat(v) !== 0;
-    });
-  const hasDeviation =
-    deviationCol !== undefined &&
-    balls.some((b) => {
-      const v = b.row[deviationCol];
-      return v !== undefined && v !== '' && parseFloat(v) !== 0;
-    });
+  const inswingCol = findCol(colIdx, 'inSwing', 'Inswing', 'INSWING', 'inswing');
+  const deviationCol = findCol(colIdx, 'deviation', 'Deviation', 'DEVIATION');
+  const hasInswing = colHasValues(balls, inswingCol);
+  const hasDeviation = colHasValues(balls, deviationCol);
 
   return (
     <>
@@ -675,7 +703,7 @@ function AllBallsDetail({ balls, colIdx }) {
                 ))}
                 {hasInswing && (
                   <th rowSpan={2} style={{ textAlign: 'center', verticalAlign: 'bottom' }}>
-                    Inswing
+                    Swing
                   </th>
                 )}
                 {hasDeviation && (
@@ -762,19 +790,17 @@ function AllBallsDetail({ balls, colIdx }) {
                         </React.Fragment>
                       );
                     })}
-                    {/* Inswing & Deviation — show only when non-zero */}
-                    {hasInswing &&
-                      (() => {
-                        const v = ball.row[inswingCol];
-                        const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0;
-                        return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>;
-                      })()}
-                    {hasDeviation &&
-                      (() => {
-                        const v = ball.row[deviationCol];
-                        const nonZero = v !== undefined && v !== '' && parseFloat(v) !== 0;
-                        return <td style={{ textAlign: 'center' }}>{nonZero ? v : '—'}</td>;
-                      })()}
+                    {/* Inswing & Deviation */}
+                    {hasInswing && (
+                      <td style={{ textAlign: 'center', fontWeight: 600, color: swingColor(ball.row[inswingCol]) }}>
+                        {swingText(ball.row[inswingCol], 'inswing')}
+                      </td>
+                    )}
+                    {hasDeviation && (
+                      <td style={{ textAlign: 'center', fontWeight: 600, color: swingColor(ball.row[deviationCol]) }}>
+                        {swingText(ball.row[deviationCol], 'deviation')}
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -784,6 +810,21 @@ function AllBallsDetail({ balls, colIdx }) {
         <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 8, fontStyle: 'italic' }}>
           * RPM read values may not be accurate — diff not computed
         </div>
+        {(hasInswing || hasDeviation) && (
+          <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
+            {hasInswing && (
+              <>
+                <strong>Swing:</strong> In = +, Out = −
+              </>
+            )}
+            {hasInswing && hasDeviation && <span style={{ margin: '0 6px' }}>·</span>}
+            {hasDeviation && (
+              <>
+                <strong>Deviation:</strong> Off Spin = +, Leg Spin = −
+              </>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
